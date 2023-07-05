@@ -41,8 +41,8 @@ install: all
 	install -D -m 555 ./lib/stopTorcontrol.sh  $(DESTDIR)/usr/lib/torcontroller/stopTorcontrol.sh
 	install -D -m 555 ./lib/switchTorRouter.sh  $(DESTDIR)/usr/lib/torcontroller/switchTorRouter.sh
 # set 'torcontroller' as the default tor authentication password.
-	@hashTorPWD=$(tor --hash-password "torcontroller" | tail -n 1)
-	@sed -i "/HashedControlPassword/s/.*/HashedControlPassword $hashTorPWD/" /etc/tor/torrc
+	@hashTorPWD=$$(tor --hash-password "torcontroller" | tail -n 1) && \
+	sed -i "/HashedControlPassword/s/.*/HashedControlPassword $$hashTorPWD/" /etc/tor/torrc
 	@unset hashTorPWD
 # Makefile install finished.
 	@echo "torcontroller package installed successfully."
