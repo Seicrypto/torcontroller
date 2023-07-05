@@ -46,6 +46,9 @@ while IFS= read -r -s -n 1 char; do
 done
 echo ""
 # Verify that the old password hash is correct.
+# According to tor sources,
+# Seems like using ED25519,
+# Maybe verify with some word by torcontroller in the future.
 torVerifyResponse=$(echo -e "AUTHENTICATE \"$oldTorPWD\"\r\nQUIT" | nc -q 1 127.0.0.1 9051 | head -n 1)
 torVerifyResponse=$(trim "$torVerifyResponse")
 if [[ $torVerifyResponse != "250 OK" ]]; then

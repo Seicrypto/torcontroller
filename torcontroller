@@ -4,7 +4,7 @@ param=$1
 # Tops two options --version and --help,
 # showing torcontroller Current version and features.
 if [[ "$param" == "--version" || "$param" == "-V" ]]; then
-    echo "------torcontroller-1.0------"
+    echo "torcontroller version 1.0"
 elif [[ "$param" == "--help" || "$param" == "-H" ]]; then
     echo "Usage: torcontroller [OPTIONS]"
     echo ""
@@ -18,23 +18,23 @@ elif [[ "$param" == "--help" || "$param" == "-H" ]]; then
     echo "-W        --switch            Change IP. Switch Tor though another router service."
     exit 0
 elif [[ "$param" == "--start" || "$param" == "-S" ]]; then
-    bash ../lib/torcontroller/startTorcontrol.sh &&
+    bash /usr/lib/torcontroller/startTorcontrol.sh &&
         echo "Command succeeded." &&
         exit 0
 elif [[ "$param" == "--stop" || "$param" == "-C" ]]; then
-    bash ../lib/torcontroller/stopTorcontrol.sh &&
+    bash /usr/lib/torcontroller/stopTorcontrol.sh &&
         echo "Command succeeded." &&
         exit 0
 elif [[ "$param" == "--resetpassword" || "$param" == "-A" ]]; then
-    bash ../lib/torcontroller/resetTorPassword.sh &&
+    bash /usr/lib/torcontroller/resetTorPassword.sh &&
         echo "Command succeeded." &&
         exit 0
 elif [[ "$param" == "--switch" || "$param" == "-W" ]]; then
-    bash ../lib/torcontroller/switchTorRouter.sh &&
+    bash /usr/lib/torcontroller/switchTorRouter.sh &&
         echo "Command succeeded." &&
         exit 0
 elif [[ "$param" == "--getip" || "$param" == "-G" ]]; then
-    bash ../lib/torcontroller/getIP.sh &&
+    bash /usr/lib/torcontroller/getIP.sh &&
         echo "Command succeeded." &&
         exit 0
 else

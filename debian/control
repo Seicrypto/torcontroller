@@ -8,7 +8,8 @@ Homepage: <insert the upstream URL, if relevant>
 
 Package: debscripttest
 Architecture: any
-Depends: ${shlibs:Depends}, adduser, ${misc:Depends}, lsb-base, tor(>= 0.4.2.7), privoxy(>= 3.0.28)
+Depends: ${shlibs:Depends}, adduser, ${misc:Depends}, lsb-base, curl, netcat, tor(>= 0.4.2.7), privoxy(>= 3.0.28)
 Pre-Depends: ${misc:Pre-Depends}
-Description: Just a Hello World test package
-  This package contains a simple bash script that prints "Apt install script test."
+Description: simple scripts for controlling tor and privoxy.
+  This package conbine tor and privoxy packages.
+  Built command scripts let user easilier to call tor features.

@@ -1385,7 +1385,7 @@ enable-proxy-authentication-forwarding 0
 #      To chain Privoxy and Tor, both running on the same system, you
 #      would use something like:
 #
-#        forward-socks5t   /               127.0.0.1:9050 .
+forward-socks5t / 127.0.0.1:9050 .
 #
 #      Note that if you got Tor through one of the bundles, you may
 #      have to change the port from 9050 to 9150 (or even another
@@ -2463,4 +2463,3 @@ socket-timeout 300
 #
 #
 #
-forward-socks5t / 127.0.0.1:9050 .
