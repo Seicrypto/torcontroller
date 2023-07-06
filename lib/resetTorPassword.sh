@@ -10,13 +10,16 @@ trim() {
     echo -n "$var"
 }
 # Check TOR service is running.
-torServiceStatus=$(service tor status | head -n 1)
-torServiceStatus=$(trim "$torServiceStatus")
-if [[ $torServiceStatus != "* tor is running" ]]; then
-    echo "Please command 'torcontroller --start' to start torserver first"
-    echo "Because need TOR server to verify."
-    exit 1
-fi
+# Service respon different content in each version.
+
+# torServiceStatus=$(service tor status | head -n 1)
+# torServiceStatus=$(trim "$torServiceStatus")
+# if [[ $torServiceStatus != "* tor is running" ]]; then
+#     echo "Please command 'torcontroller --start' to start torserver first"
+#     echo "Because need TOR server to verify."
+#     exit 1
+# fi
+
 # Info about --setpassword option.
 echo "Important!"
 echo "To protect your persinal torcontroller use."
@@ -52,7 +55,10 @@ echo ""
 torVerifyResponse=$(echo -e "AUTHENTICATE \"$oldTorPWD\"\r\nQUIT" | nc -q 1 127.0.0.1 9051 | head -n 1)
 torVerifyResponse=$(trim "$torVerifyResponse")
 if [[ $torVerifyResponse != "250 OK" ]]; then
-    echo -e "\nIncorrect old password. Exiting..."
+    echo -e "\nIncorrect old password."
+    echo "Or you haven't start tor,"
+    echo "command 'torcontroller --start' to start torserver first"
+    echo "Exiting..."
     exit 1
 fi
 # User set up new_password.
