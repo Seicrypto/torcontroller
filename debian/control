@@ -1,4 +1,4 @@
-Source: debscripttest
+Source: torcontroller
 Section: net
 Priority: optional
 Maintainer: Sei <seikanchintw@gmail.com>
@@ -6,7 +6,7 @@ Build-Depends: debhelper-compat (= 12)
 Standards-Version: 4.4.0
 Homepage: <insert the upstream URL, if relevant>
 
-Package: debscripttest
+Package: torcontroller
 Architecture: any
 Depends: ${shlibs:Depends}, adduser, ${misc:Depends}, lsb-base, curl, netcat, tor(>= 0.4.2.7), privoxy(>= 3.0.28)
 Pre-Depends: ${misc:Pre-Depends}
