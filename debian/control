@@ -2,7 +2,7 @@ Source: torcontroller
 Section: net
 Priority: optional
 Maintainer: Sei <seikanchintw@gmail.com>
-Build-Depends: debhelper-compat (= 12)
+Build-Depends: debhelper-compat (= 12), curl, netcat, tor (>= 0.4.2.7), privoxy (>= 3.0.28)
 Standards-Version: 4.4.0
 Homepage: <insert the upstream URL, if relevant>
 
