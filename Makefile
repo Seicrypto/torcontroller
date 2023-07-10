@@ -3,12 +3,12 @@ all:checkPackage
 checkPackage:
 # curl
 	@dpkg -s curl >/dev/null 2>&1 || (\
-	echo "The 'netcat' package is not installed. Please install it using 'sudo apt install netcat' and try again." \
+	echo "The 'curl' package is not installed. Please install it using 'sudo apt install curl' and try again." \
 	&& exit 1\
 	)
 # netcat
-	@dpkg -s netcat >/dev/null 2>&1 || (\
-	echo "The 'netcat' package is not installed. Please install it using 'sudo apt install netcat' and try again." \
+	@dpkg -s netcat-traditional >/dev/null 2>&1 || (\
+	echo "The 'netcat-traditional' package is not installed. Please install it using 'sudo apt install netcat-traditional' and try again." \
 	&& exit 1\
 	)
 # tor
