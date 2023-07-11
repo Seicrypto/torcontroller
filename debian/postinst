@@ -28,35 +28,48 @@ else
 fi
 # Restart tor and privoxy to read new settings.
 supervisorResponse=$(supervisorctl status 2>&1)
-if [ "$supervisorResponse" = *"can't find command"* ]; then
+case "$supervisorResponse" in
+*"can't find command"*)
     echo "supervisor not installed properly!" && exit 1
-elif [ "$supervisorResponse" = *"no such file"* ]; then
+    ;;
+*"no such file"*)
     supervisord -c /etc/supervisor/supervisord.conf
-elif [ "$supervisorResponse" = *"no such process"* ]; then
+    ;;
+*"no such process"*)
     supervisorctl reread
     supervisorctl update
-else
+    ;;
+*)
     echo "Unknown error!" && exit 1
-fi
+    ;;
+esac
 # Check and start tor / privoxy service should be stopped.
 torsuperResponse=$(supervisorctl status tor | grep "tor")
-if [ "$torsuperResponse" = *"RUNNING"* ]; then
+case "$torsuperResponse" in
+*"RUNNING"*)
     supervisorctl stop tor
-elif [ "$torsuperResponse" = *"STOPPED"* ]; then
+    ;;
+*"STOPPED"*)
     kill $(pidof tor) || true
     echo "Tor already stopped."
-else
+    ;;
+*)
     echo "Unknown tor program status!"
-fi
+    ;;
+esac
 privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
-if [ "$privoxysuperResponse" = *"RUNNING"* ]; then
+case "$privoxysuperResponse" in
+*"RUNNING"*)
     supervisorctl stop privoxy
-elif [ "$privoxysuperResponse" = *"STOPPED"* ]; then
+    ;;
+*"STOPPED"*)
     kill $(pidof privoxy) || true
     echo "privoxy already stopped."
-else
+    ;;
+*)
     echo "Unknow privoxy program status!"
-fi
+    ;;
+esac
 # Place tor and privoxy setting files.
 # Backup user tor and privoxy setting before install.
 # For new tor and privoxy files still complex,

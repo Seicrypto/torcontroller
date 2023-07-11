@@ -1,33 +1,38 @@
 #!/bin/sh
 # Make sure tor and privoxy service already stopped.
 supervisorResponse=$(supervisorctl status 2>&1)
-if [ "$supervisorResponse" = *"no such file"* ]; then
+case "$supervisorResponse" in
+*"no such file"*)
     supervisord -c /etc/supervisor/supervisord.conf
-fi
+    ;;
+esac
 torsuperResponse=$(supervisorctl status tor | grep "tor")
-if [ "$torsuperResponse" = *"RUNNING"* ]; then
+case "$torsuperResponse" in
+*"RUNNING"*)
     supervisorctl stop tor
-elif [ "$torsuperResponse" = *"STOPPED"* ]; then
+    ;;
+*"STOPPED"*)
     kill $(pidof tor) || true
     echo "Tor already stopped."
-elif [ "$torsuperResponse" = *"FATAL"* ]; then
-    kill $(pidof tor) || true
-    echo "Tor stopped."
-else
+    ;;
+*)
     echo "Unknown tor program status!"
-fi
+    ;;
+esac
+
 privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
-if [ "$privoxysuperResponse" = *"RUNNING"* ]; then
+case "$privoxysuperResponse" in
+*"RUNNING"*)
     supervisorctl stop privoxy
-elif [ "$privoxysuperResponse" = *"STOPPED"* ]; then
+    ;;
+*"STOPPED"*)
     kill $(pidof privoxy) || true
-    echo "privoxy already stopped."
-elif [ "$privoxysuperResponse" = *"FATAL"* ]; then
-    kill $(pidof privoxy) || true
-    echo "privoxy stopped."
-else
-    echo "Unknow privoxy program status!"
-fi
+    echo "Tor already stopped."
+    ;;
+*)
+    echo "Unknown privoxy program status!"
+    ;;
+esac
 # If torrc and privoxy backup file existed,
 # replace it.
 if [ ! -f /etc/tor/torrc.back ]; then
@@ -40,6 +45,12 @@ if [ ! -f /etc/privoxy/config.back ]; then
 fi
 # If supervisor user setting backup file existed,
 # replace it.
-supervisorctl shutdown
+if [ ! -f /etc/supervisor/supervisord.conf.back ]; then
+    cp /etc/supervisor/supervisord.conf.back /etc/supervisor/supervisord.conf.back
+    rm -f cp /etc/supervisor/supervisord.conf.back
+    supervisorctl reread
+    supervisorctl update
+fi
+# remove any tmp files.
 rm -rf /tmp/torcontoller
 echo "postrm script fiinished."
