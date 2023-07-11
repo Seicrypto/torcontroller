@@ -9,17 +9,21 @@ trim() {
     var="${var%"${var##*[![:space:]]}"}"
     echo -n "$var"
 }
-# Check TOR service is running.
-# Service respon different content in each version.
-
-# torServiceStatus=$(service tor status | head -n 1)
-# torServiceStatus=$(trim "$torServiceStatus")
-# if [[ $torServiceStatus != "* tor is running" ]]; then
-#     echo "Please command 'torcontroller --start' to start torserver first"
-#     echo "Because need TOR server to verify."
-#     exit 1
-# fi
-
+# Check supervisor service should be running.
+supervisorResponse=$(supervisorctl status 2>&1)
+if [[ $supervisorResponse == *"no such file"* ]]; then
+    supervisord -c /etc/supervisor/supervisord.conf
+fi
+# Check tor service should be running.
+# Privoxy is no needed in this scripts, just go together.
+torsuperResponse=$(supervisorctl status tor | grep "tor")
+if [[ $torsuperResponse == *"STOPPED"* ]]; then
+    supervisorctl start tor
+fi
+privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
+if [[ $privoxysuperResponse == *"STOPPED"* ]]; then
+    supervisorctl start privoxy
+fi
 # Info about --setpassword option.
 echo "Important!"
 echo "To protect your persinal torcontroller use."
@@ -54,10 +58,8 @@ echo ""
 # Maybe verify with some word by torcontroller in the future.
 torVerifyResponse=$(echo -e "AUTHENTICATE \"$oldTorPWD\"\r\nQUIT" | nc -q 1 127.0.0.1 9051 | head -n 1)
 torVerifyResponse=$(trim "$torVerifyResponse")
-if [[ $torVerifyResponse != "250 OK" ]]; then
+if [[ $torVerifyResponse != *"250 OK"* ]]; then
     echo -e "\nIncorrect old password."
-    echo "Or you haven't start tor,"
-    echo "command 'torcontroller --start' to start torserver first"
     echo "Exiting..."
     exit 1
 fi
@@ -102,14 +104,13 @@ fi
 # accourding TOR rules.
 ## Maybe just call stopTorServer.sh script in the future,
 ## if the script getting better.
-kill $(pidof tor)
-service tor stop
+supervisorctl stop tor
 # Hash the new password and hash it,
 # then record the hash code to tor setting.
 inbashTorHashPWD=$(tor --hash-password "$newTorPWD" | tail -n 1)
 sed -i "/HashedControlPassword/s/.*/HashedControlPassword $inbashTorHashPWD/" /etc/tor/torrc
 # Restart tor server
-service tor start
+supervisorctl start tor
 # Check new password legal or not.
 ## torVerifyResponse again. for Dev
 torVerifyResponse=$(echo -e "AUTHENTICATE \"$newTorPWD\"\r\nQUIT" | nc -q 1 127.0.0.1 9051 | head -n 1)

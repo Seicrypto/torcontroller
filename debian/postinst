@@ -1,0 +1,73 @@
+#!/bin/sh
+echo "torcontroller postinst setting script..."
+# Place supervisor setting file.
+# torcontoller would build tor and privoxy program in supervisord.conf
+# Due to user might built their own program,
+# if tor or privoxy program existed, backup it and place new setting file.
+# ir did NOT exist, just add torcontroller program.
+if [ ! -f /etc/supervisor/supervisord.conf ]; then
+    cp /tmp/torcontoller/supervisord.conf /etc/supervisor/supervisord.conf
+elif ! grep -q "\[program:tor\]" /etc/supervisor/supervisord.conf && ! grep -q "\[program:privoxy\]" /etc/supervisor/supervisord.conf; then
+    cat <<EOF >>/etc/supervisor/supervisord.conf
+[program:tor]
+command=/usr/bin/tor
+autostart=true
+autorestart=true
+redirect_stderr=true
+EOF
+    cat <<EOF >>/etc/supervisor/supervisord.conf
+[program:privoxy]
+command=/usr/sbin/privoxy --no-daemon /etc/privoxy/config
+autostart=true
+autorestart=true
+redirect_stderr=true
+EOF
+else
+    cp /etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf.back
+    cp /tmp/torcontoller/supervisord.conf /etc/supervisor/supervisord.conf
+fi
+# Restart tor and privoxy to read new settings.
+supervisorResponse=$(supervisorctl status 2>&1)
+if [ "$supervisorResponse" = *"can't find command"* ]; then
+    echo "supervisor not installed properly!" && exit 1
+elif [ "$supervisorResponse" = *"no such file"* ]; then
+    supervisord -c /etc/supervisor/supervisord.conf
+elif [ "$supervisorResponse" = *"no such process"* ]; then
+    supervisorctl reread
+    supervisorctl update
+else
+    echo "Unknown error!" && exit 1
+fi
+# Check and start tor / privoxy service should be stopped.
+torsuperResponse=$(supervisorctl status tor | grep "tor")
+if [ "$torsuperResponse" = *"RUNNING"* ]; then
+    supervisorctl stop tor
+elif [ "$torsuperResponse" = *"STOPPED"* ]; then
+    kill $(pidof tor) || true
+    echo "Tor already stopped."
+else
+    echo "Unknown tor program status!"
+fi
+privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
+if [ "$privoxysuperResponse" = *"RUNNING"* ]; then
+    supervisorctl stop privoxy
+elif [ "$privoxysuperResponse" = *"STOPPED"* ]; then
+    kill $(pidof privoxy) || true
+    echo "privoxy already stopped."
+else
+    echo "Unknow privoxy program status!"
+fi
+# Place tor and privoxy setting files.
+# Backup user tor and privoxy setting before install.
+# For new tor and privoxy files still complex,
+# torcontroller back up user's origin setting.
+if [ -f /etc/tor/torrc ]; then cp /etc/tor/torrc /etc/tor/torrc.back; fi
+cp /tmp/torcontoller/torrc /etc/tor/torrc
+if [ -f /etc/privoxy/config ]; then cp /etc/privoxy/config /etc/privoxy/config.back; fi
+cp /tmp/torcontoller/config /etc/privoxy/config
+# set 'torcontroller' as the default tor authentication password.
+hashTorPWD=$(tor --hash-password "torcontroller" | tail -n 1)
+sed -i "/HashedControlPassword/s/.*/HashedControlPassword $hashTorPWD/" /etc/tor/torrc
+unset hashTorPWD
+rm -rf /tmp/torcontoller
+echo "postinst script finished."
