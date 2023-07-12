@@ -45,13 +45,20 @@ case "$supervisorResponse" in
     ;;
 esac
 # Wait until supervisord is properly started
-until supervisorctl status >/dev/null 2>&1; do
+echo "Supervisor Check..."
+stateCounter=0
+until supervisorctl status >/dev/null 2>&1 || [ $stateCounter -ge 60 ]; do
     echo "Waiting for supervisord to start..."
     sleep 1
+    stateCounter=$(($stateCounter + 1))
 done
+if [ $stateCounter -ge 60 ]; then
+    echo "Supervisor failed to start within 60 seconds, exiting."
+    exit 1
+fi
 # Check and start tor / privoxy service should be stopped.
 # Maybe try supervisor response code in the future.
-torsuperResponse=$(supervisorctl status tor 2>&1 | grep "tor")
+torsuperResponse=$(supervisorctl status tor 2>&1)
 case "$torsuperResponse" in
 *"RUNNING"*)
     supervisorctl stop tor
@@ -64,7 +71,7 @@ case "$torsuperResponse" in
     echo "Unknown tor program status!"
     ;;
 esac
-privoxysuperResponse=$(supervisorctl status privoxy 2>&1 | grep "privoxy")
+privoxysuperResponse=$(supervisorctl status privoxy 2>&1)
 case "$privoxysuperResponse" in
 *"RUNNING"*)
     supervisorctl stop privoxy
