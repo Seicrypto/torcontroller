@@ -69,6 +69,8 @@ case "$torsuperResponse" in
     ;;
 *)
     echo "Unknown tor program status!"
+    #print what is wrong.
+    echo "$torsuperResponse"
     ;;
 esac
 privoxysuperResponse=$(supervisorctl status privoxy 2>&1)
@@ -82,6 +84,8 @@ case "$privoxysuperResponse" in
     ;;
 *)
     echo "Unknown privoxy program status!"
+    #print what is wrong.
+    echo "$privoxysuperResponse"
     ;;
 esac
 # Place tor and privoxy setting files.
