@@ -24,9 +24,10 @@ redirect_stderr=true
 EOF
 else
     cp /etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf.back
-    cp /tmp/torcontoller/supervisord.conf /etc/supervisor/supervisord.conf
+    cp /tmp/torcontroller/supervisord.conf /etc/supervisor/supervisord.conf
 fi
 # Restart tor and privoxy to read new settings.
+# Maybe try supervisor response code in the future.
 supervisorResponse=$(supervisorctl status 2>&1)
 case "$supervisorResponse" in
 *"can't find command"*)
@@ -44,7 +45,8 @@ case "$supervisorResponse" in
     ;;
 esac
 # Check and start tor / privoxy service should be stopped.
-torsuperResponse=$(supervisorctl status tor | grep "tor")
+# Maybe try supervisor response code in the future.
+torsuperResponse=$(supervisorctl status tor 2>&1 | grep "tor")
 case "$torsuperResponse" in
 *"RUNNING"*)
     supervisorctl stop tor
@@ -57,7 +59,7 @@ case "$torsuperResponse" in
     echo "Unknown tor program status!"
     ;;
 esac
-privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
+privoxysuperResponse=$(supervisorctl status privoxy 2>&1 | grep "privoxy")
 case "$privoxysuperResponse" in
 *"RUNNING"*)
     supervisorctl stop privoxy
@@ -75,12 +77,14 @@ esac
 # For new tor and privoxy files still complex,
 # torcontroller back up user's origin setting.
 if [ -f /etc/tor/torrc ]; then cp /etc/tor/torrc /etc/tor/torrc.back; fi
-cp /tmp/torcontoller/torrc /etc/tor/torrc
+cp /tmp/torcontroller/torrc /etc/tor/torrc
 if [ -f /etc/privoxy/config ]; then cp /etc/privoxy/config /etc/privoxy/config.back; fi
-cp /tmp/torcontoller/config /etc/privoxy/config
+cp /tmp/torcontroller/config /etc/privoxy/config
 # set 'torcontroller' as the default tor authentication password.
 hashTorPWD=$(tor --hash-password "torcontroller" | tail -n 1)
 sed -i "/HashedControlPassword/s/.*/HashedControlPassword $hashTorPWD/" /etc/tor/torrc
 unset hashTorPWD
-rm -rf /tmp/torcontoller
+rm -rf /tmp/torcontroller
+supervisorctl stop privoxy
+supervisorctl stop tor
 echo "postinst script finished."
