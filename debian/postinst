@@ -44,6 +44,11 @@ case "$supervisorResponse" in
     echo "Unknown error!" && exit 1
     ;;
 esac
+# Wait until supervisord is properly started
+until supervisorctl status >/dev/null 2>&1; do
+    echo "Waiting for supervisord to start..."
+    sleep 1
+done
 # Check and start tor / privoxy service should be stopped.
 # Maybe try supervisor response code in the future.
 torsuperResponse=$(supervisorctl status tor 2>&1 | grep "tor")
@@ -69,7 +74,7 @@ case "$privoxysuperResponse" in
     echo "privoxy already stopped."
     ;;
 *)
-    echo "Unknow privoxy program status!"
+    echo "Unknown privoxy program status!"
     ;;
 esac
 # Place tor and privoxy setting files.
@@ -85,6 +90,4 @@ hashTorPWD=$(tor --hash-password "torcontroller" | tail -n 1)
 sed -i "/HashedControlPassword/s/.*/HashedControlPassword $hashTorPWD/" /etc/tor/torrc
 unset hashTorPWD
 rm -rf /tmp/torcontroller
-supervisorctl stop privoxy
-supervisorctl stop tor
 echo "postinst script finished."
