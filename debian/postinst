@@ -45,7 +45,6 @@ case "$supervisorResponse" in
     ;;
 esac
 # Wait until supervisord is properly started
-echo "Supervisor Check..."
 stateCounter=0
 until supervisorctl status >/dev/null 2>&1 || [ $stateCounter -ge 60 ]; do
     echo "Waiting for supervisord to start..."
@@ -56,38 +55,72 @@ if [ $stateCounter -ge 60 ]; then
     echo "Supervisor failed to start within 60 seconds, exiting."
     exit 1
 fi
+# Reset counter
+stateCounter=0
 # Check and start tor / privoxy service should be stopped.
 # Maybe try supervisor response code in the future.
-torsuperResponse=$(supervisorctl status tor 2>&1)
-case "$torsuperResponse" in
-*"RUNNING"*)
-    supervisorctl stop tor
-    ;;
-*"STOPPED"*)
-    kill $(pidof tor) || true
-    echo "Tor already stopped."
-    ;;
-*)
-    echo "Unknown tor program status!"
-    #print what is wrong.
-    echo "$torsuperResponse"
-    ;;
-esac
-privoxysuperResponse=$(supervisorctl status privoxy 2>&1)
-case "$privoxysuperResponse" in
-*"RUNNING"*)
-    supervisorctl stop privoxy
-    ;;
-*"STOPPED"*)
-    kill $(pidof privoxy) || true
-    echo "privoxy already stopped."
-    ;;
-*)
-    echo "Unknown privoxy program status!"
-    #print what is wrong.
-    echo "$privoxysuperResponse"
-    ;;
-esac
+while true; do
+    torsuperResponse=$(supervisorctl status tor 2>&1)
+    case "$torsuperResponse" in
+    *"STARTING"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "tor failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for tor..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"RUNNING"*)
+        supervisorctl stop tor
+        break
+        ;;
+    *"STOPPED"*)
+        kill $(pidof tor) || true
+        echo "Tor already stopped."
+        break
+        ;;
+    *)
+        echo "Unknown tor program status! Response:"
+        #print what is wrong.
+        echo "$torsuperResponse"
+        exit 1
+        ;;
+    esac
+done
+# Reset counter
+stateCounter=0
+while true; do
+    privoxysuperResponse=$(supervisorctl status privoxy 2>&1)
+    case "$privoxysuperResponse" in
+    *"STARTING"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "privoxy failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for privoxy..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"RUNNING"*)
+        supervisorctl stop privoxy
+        break
+        ;;
+    *"STOPPED"*)
+        kill $(pidof privoxy) || true
+        echo "privoxy already stopped."
+        break
+        ;;
+    *)
+        echo "Unknown privoxy program status!"
+        #print what is wrong.
+        echo "$privoxysuperResponse"
+        exit 1
+        ;;
+    esac
+done
 # Place tor and privoxy setting files.
 # Backup user tor and privoxy setting before install.
 # For new tor and privoxy files still complex,
