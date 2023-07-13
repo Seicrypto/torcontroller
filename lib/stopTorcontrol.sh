@@ -26,6 +26,7 @@ while true; do
     *)
         echo "Unknown privoxy status:"
         echo "$privoxyResponse"
+        break
         ;;
     esac
 done
@@ -55,6 +56,7 @@ while true; do
     *)
         echo "Unknown tor status:"
         echo "$torResponse"
+        break
         ;;
     esac
 done

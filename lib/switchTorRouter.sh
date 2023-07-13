@@ -26,6 +26,7 @@ while true; do
     *)
         echo "Unknown tor status:"
         echo "$torResponse"
+        break
         ;;
     esac
 done
@@ -51,10 +52,12 @@ while true; do
         ;;
     *"dead"*)
         systemctl start privoxy
+        break
         ;;
     *)
         echo "Unknown privoxy status:"
         echo "$privoxyResponse"
+        break
         ;;
     esac
 done
