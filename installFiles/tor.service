@@ -1,0 +1,15 @@
+[Unit]
+Description=Anonymizing overlay network for TCP (multi-instance-master)
+After=network.target
+
+[Service]
+User=root
+Type=simple
+ExecStart=/usr/bin/tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc --RunAsDaemon 0
+ExecReload=/bin/kill -HUP ${MAINPID}
+KillSignal=SIGINT
+LimitNOFILE=8192
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

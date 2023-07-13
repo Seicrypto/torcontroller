@@ -39,6 +39,8 @@ install: all
 	install -D -m 555 ./installFiles/supervisord.conf $(DESTDIR)/tmp/torcontroller/supervisord.conf
 	install -D -m 555 ./installFiles/torrc $(DESTDIR)/tmp/torcontroller/torrc
 	install -D -m 555 ./installFiles/config $(DESTDIR)/tmp/torcontroller/config
+	install -D -m 555 ./installFiles/tor.service $(DESTDIR)/tmp/torcontroller/tor.service
+	install -D -m 555 ./installFiles/privoxy.service $(DESTDIR)/tmp/torcontroller/privoxy.service
 # Makefile install finished.
 	@echo "torcontroller package Makefile worked successfully."
 clean:
