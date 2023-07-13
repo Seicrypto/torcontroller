@@ -22,8 +22,10 @@ fi
 # Check and start tor / privoxy service should be stopped.
 # Maybe try supervisor response code in the future.
 while true; do
-    torsuperResponse=$(systemctl status tor 2>&1)
-    case "$torsuperResponse" in
+    torResponse=$(systemctl status tor 2>&1)
+    echo "log:"
+    echo "$torResponse"
+    case "$torResponse" in
     *"disable"*)
         systemctl enable tor
         systemctl stop tor
@@ -41,14 +43,16 @@ while true; do
     *)
         echo "Unknown tor program status! Response:"
         #print what is wrong.
-        echo "$torsuperResponse"
+        echo "$torResponse"
         exit 1
         ;;
     esac
 done
 while true; do
-    privoxysuperResponse=$(systemctl status privoxy 2>&1)
-    case "$privoxysuperResponse" in
+    privoxyResponse=$(systemctl status privoxy 2>&1)
+    echo "log:"
+    echo "$privoxyResponse"
+    case "$privoxyResponse" in
     *"disable"*)
         systemctl enable privoxy
         systemctl stop privoxy
@@ -66,7 +70,7 @@ while true; do
     *)
         echo "Unknown privoxy program status!"
         #print what is wrong.
-        echo "$privoxysuperResponse"
+        echo "$privoxyResponse"
         exit 1
         ;;
     esac
