@@ -1,82 +1,39 @@
 #!/bin/sh
 echo "torcontroller postinst setting script..."
-# Place supervisor setting file.
-# torcontoller would build tor and privoxy program in supervisord.conf
+# Place systemctl setting file.
+# torcontoller would build tor.service and privoxy.service files.
 # Due to user might built their own program,
 # if tor or privoxy program existed, backup it and place new setting file.
 # ir did NOT exist, just add torcontroller program.
-if [ ! -f /etc/supervisor/supervisord.conf ]; then
-    cp /tmp/torcontoller/supervisord.conf /etc/supervisor/supervisord.conf
-elif ! grep -q "\[program:tor\]" /etc/supervisor/supervisord.conf && ! grep -q "\[program:privoxy\]" /etc/supervisor/supervisord.conf; then
-    cat <<EOF >>/etc/supervisor/supervisord.conf
-[program:tor]
-command=/usr/bin/tor
-autostart=true
-autorestart=true
-redirect_stderr=true
-EOF
-    cat <<EOF >>/etc/supervisor/supervisord.conf
-[program:privoxy]
-command=/usr/sbin/privoxy --no-daemon /etc/privoxy/config
-autostart=true
-autorestart=true
-redirect_stderr=true
-EOF
+if [ -f /etc/systemd/system/privoxy.service ]; then
+    cp /etc/systemd/system/privoxy.service /etc/systemd/system/privoxy.service.back
+    rm -f /etc/systemd/system/privoxy.service
+    cp /tmp/torcontroller/privoxy.service /etc/systemd/system/privoxy.service
 else
-    cp /etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf.back
-    cp /tmp/torcontroller/supervisord.conf /etc/supervisor/supervisord.conf
+    cp /tmp/torcontroller/privoxy.service /etc/systemd/system/privoxy.service
 fi
-# Restart tor and privoxy to read new settings.
-# Maybe try supervisor response code in the future.
-supervisorResponse=$(supervisorctl status 2>&1)
-case "$supervisorResponse" in
-*"can't find command"*)
-    echo "supervisor not installed properly!" && exit 1
-    ;;
-*"no such file"*)
-    supervisord -c /etc/supervisor/supervisord.conf
-    ;;
-*"no such process"*)
-    supervisorctl reread
-    supervisorctl update
-    ;;
-*)
-    echo "Unknown error!" && exit 1
-    ;;
-esac
-# Wait until supervisord is properly started
-stateCounter=0
-until supervisorctl status >/dev/null 2>&1 || [ $stateCounter -ge 60 ]; do
-    echo "Waiting for supervisord to start..."
-    sleep 1
-    stateCounter=$(($stateCounter + 1))
-done
-if [ $stateCounter -ge 60 ]; then
-    echo "Supervisor failed to start within 60 seconds, exiting."
-    exit 1
+if [ -f /etc/systemd/system/tor.service ]; then
+    cp /etc/systemd/system/tor.service /etc/systemd/system/tor.service.back
+    rm -f /etc/systemd/system/tor.service
+    cp /tmp/torcontroller/tor.service /etc/systemd/system/tor.service
+else
+    cp /tmp/torcontroller/tor.service /etc/systemd/system/tor.service
 fi
-# Reset counter
-stateCounter=0
 # Check and start tor / privoxy service should be stopped.
 # Maybe try supervisor response code in the future.
 while true; do
-    torsuperResponse=$(supervisorctl status tor 2>&1)
+    torsuperResponse=$(systemctl status tor 2>&1)
     case "$torsuperResponse" in
-    *"STARTING"*)
-        if [ $stateCounter -ge 60 ]; then
-            echo "tor failed to start within 60 seconds, exiting."
-            exit 1
-        fi
-        echo "Waiting for tor..."
-        sleep 1
-        stateCounter=$(($stateCounter + 1))
-        continue
-        ;;
-    *"RUNNING"*)
-        supervisorctl stop tor
+    *"disable"*)
+        systemctl enable tor
+        systemctl stop tor
         break
         ;;
-    *"STOPPED"*)
+    *"running"*)
+        systemctl stop tor
+        break
+        ;;
+    *"dead"*)
         kill $(pidof tor) || true
         echo "Tor already stopped."
         break
@@ -89,23 +46,16 @@ while true; do
         ;;
     esac
 done
-# Reset counter
-stateCounter=0
 while true; do
-    privoxysuperResponse=$(supervisorctl status privoxy 2>&1)
+    privoxysuperResponse=$(systemctl status privoxy 2>&1)
     case "$privoxysuperResponse" in
-    *"STARTING"*)
-        if [ $stateCounter -ge 60 ]; then
-            echo "privoxy failed to start within 60 seconds, exiting."
-            exit 1
-        fi
-        echo "Waiting for privoxy..."
-        sleep 1
-        stateCounter=$(($stateCounter + 1))
-        continue
+    *"disable"*)
+        systemctl enable privoxy
+        systemctl stop privoxy
+        break
         ;;
-    *"RUNNING"*)
-        supervisorctl stop privoxy
+    *"running"*)
+        systemctl stop privoxy
         break
         ;;
     *"STOPPED"*)

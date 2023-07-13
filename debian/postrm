@@ -1,33 +1,26 @@
 #!/bin/sh
 # Make sure tor and privoxy service already stopped.
-supervisorResponse=$(supervisorctl status 2>&1)
-case "$supervisorResponse" in
-*"no such file"*)
-    supervisord -c /etc/supervisor/supervisord.conf
-    ;;
-esac
-torsuperResponse=$(supervisorctl status tor | grep "tor")
-case "$torsuperResponse" in
-*"RUNNING"*)
-    supervisorctl stop tor
-    ;;
-*"STOPPED"*)
-    kill $(pidof tor) || true
-    echo "Tor already stopped."
-    ;;
-*)
-    echo "Unknown tor program status!"
-    ;;
-esac
-
-privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
-case "$privoxysuperResponse" in
-*"RUNNING"*)
+privoxyResponse=$(systemctl status privoxy)
+case "$privoxyResponse" in
+*"running"*)
     supervisorctl stop privoxy
     ;;
-*"STOPPED"*)
+*"dead"* | *"failed"*)
     kill $(pidof privoxy) || true
-    echo "Tor already stopped."
+    echo "Privoxy stopped."
+    ;;
+*)
+    echo "Unknown privoxy program status!"
+    ;;
+esac
+torResponse=$(systemctl status tor)
+case "$torResponse" in
+*"running"*)
+    systemctl stop tor
+    ;;
+*"dead"* | *"failed"*)
+    kill $(pidof tor) || true
+    echo "Tor stopped."
     ;;
 *)
     echo "Unknown privoxy program status!"

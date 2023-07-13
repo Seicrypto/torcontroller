@@ -6,7 +6,7 @@ After=network.target
 User=root
 Group=root
 ExecStart=/usr/sbin/privoxy --no-daemon /etc/privoxy/config
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP ${MAINPID}
 Restart=on-failure
 
 [Install]
