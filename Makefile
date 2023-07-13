@@ -21,9 +21,14 @@ checkPackage:
 	echo "The 'privoxy' package is not installed. Please install it using 'sudo apt install privoxy' and try again." \
 	&& exit 1\
 	)
-# supervisor
-	@dpkg -s supervisor >/dev/null 2>&1 || (\
-	echo "The 'supervisor' package is not installed. Please install it using 'sudo apt install supervisor' and try again." \
+# procps
+	@dpkg -s procps >/dev/null 2>&1 || (\
+	echo "The 'privoxy' package is not installed. Please install it using 'sudo apt install privoxy' and try again." \
+	&& exit 1\
+	)
+# systemctl
+	@dpkg -s systemctl >/dev/null 2>&1 || (\
+	echo "The 'privoxy' package is not installed. Please install it using 'sudo apt install privoxy' and try again." \
 	&& exit 1\
 	)
 install: all
