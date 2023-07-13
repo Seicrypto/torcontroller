@@ -1,4 +1,0 @@
-#!/bin/sh
-# Some container NOT automatically mount /proc at boot.
-# Such as pbuilder.
-mount -t proc none /proc && echo "torcontroller mount /proc at boot" || true
