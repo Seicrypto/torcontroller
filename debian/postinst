@@ -73,11 +73,11 @@ done
 # Such as pbuilder.
 # Mount proc system.
 # pidof tor should be kill.
-mount -t proc none /proc &&
-    kill $(pidof tor) &&
-    echo "torcontroller mount /proc at boot" &&
-    echo "Please make sure that this setting would cause any safety issues for your environment." ||
-    true
+# mount -t proc none /proc &&
+#     kill $(pidof tor) &&
+#     echo "torcontroller mount /proc at boot" &&
+#     echo "Please make sure that this setting would cause any safety issues for your environment." ||
+#     true
 # Place tor and privoxy setting files.
 # Backup user tor and privoxy setting before install.
 # For new tor and privoxy files still complex,
