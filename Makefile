@@ -23,12 +23,12 @@ checkPackage:
 	)
 # procps
 	@dpkg -s procps >/dev/null 2>&1 || (\
-	echo "The 'privoxy' package is not installed. Please install it using 'sudo apt install privoxy' and try again." \
+	echo "The 'procps' package is not installed. Please install it using 'sudo apt install procps' and try again." \
 	&& exit 1\
 	)
 # systemctl
 	@dpkg -s systemctl >/dev/null 2>&1 || (\
-	echo "The 'privoxy' package is not installed. Please install it using 'sudo apt install privoxy' and try again." \
+	echo "The 'systemctl' package is not installed. Please install it using 'sudo apt install systemctl' and try again." \
 	&& exit 1\
 	)
 install: all

@@ -1,23 +1,63 @@
 #!/bin/bash
-# Check supervisor service should be running.
-supervisorResponse=$(supervisorctl status 2>&1)
-if [[ $supervisorResponse == *"no such file"* ]]; then
-    supervisord -c /etc/supervisor/supervisord.conf
-fi
-# Check and start tor / privoxy service should be stopped.
-torsuperResponse=$(supervisorctl status tor | grep "tor")
-if [[ $torsuperResponse == *"RUNNING"* ]]; then
-    supervisorctl stop tor
-elif [[ $torsuperResponse == *"STOPPED"* ]]; then
-    echo "Tor already stopped."
-else
-    echo "Unknown tor program status!"
-fi
-privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
-if [[ $privoxysuperResponse == *"RUNNING"* ]]; then
-    supervisorctl stop privoxy
-elif [[ $privoxysuperResponse == *"STOPPED"* ]]; then
-    echo "privoxy already stopped."
-else
-    echo "Unknow privoxy program status!"
-fi
+# Stop privoxy first.
+# Reset counter
+stateCounter=0
+while true; do
+    privoxyResponse=$(systemctl status privoxy)
+    case "$privoxyResponse" in
+    *"waiting"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "Privoxy failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for privoxy..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"running"*)
+        systemctl stop privoxy
+        break
+        ;;
+    *"dead"*)
+        echo "Privoxy stopped."
+        break
+        ;;
+    *)
+        echo "Unknown privoxy status:"
+        echo "$privoxyResponse"
+        ;;
+    esac
+done
+# Reset counter
+stateCounter=0
+while true; do
+    torResponse=$(systemctl status tor)
+    case "$torResponse" in
+    *"waiting"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "tor failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for tor..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"running"*)
+        systemctl stop tor
+        break
+        ;;
+    *"dead"*)
+        echo "tor stopped."
+        break
+        ;;
+    *)
+        echo "Unknown tor status:"
+        echo "$torResponse"
+        ;;
+    esac
+done
+unset torResponse
+unset privoxyResponse
+echo "Stop command succeeded."

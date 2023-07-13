@@ -9,21 +9,35 @@ trim() {
     var="${var%"${var##*[![:space:]]}"}"
     echo -n "$var"
 }
-# Check supervisor service should be running.
-supervisorResponse=$(supervisorctl status 2>&1)
-if [[ $supervisorResponse == *"no such file"* ]]; then
-    supervisord -c /etc/supervisor/supervisord.conf
-fi
+# Reset counter
+stateCounter=0
 # Check tor service should be running.
-# Privoxy is no needed in this scripts, just go together.
-torsuperResponse=$(supervisorctl status tor | grep "tor")
-if [[ $torsuperResponse == *"STOPPED"* ]]; then
-    supervisorctl start tor
-fi
-privoxysuperResponse=$(supervisorctl status privoxy | grep "privoxy")
-if [[ $privoxysuperResponse == *"STOPPED"* ]]; then
-    supervisorctl start privoxy
-fi
+# Privoxy is no needed in this scripts, just go together
+while true; do
+    torResponse=$(systemctl status tor)
+    case "$torResponse" in
+    *"waiting"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "tor failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for tor..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"running"*)
+        break
+        ;;
+    *"dead"*)
+        systemctl start tor
+        ;;
+    *)
+        echo "Unknown tor status:"
+        echo "$torResponse"
+        ;;
+    esac
+done
 # Info about --setpassword option.
 echo "Important!"
 echo "To protect your persinal torcontroller use."
@@ -104,13 +118,13 @@ fi
 # accourding TOR rules.
 ## Maybe just call stopTorServer.sh script in the future,
 ## if the script getting better.
-supervisorctl stop tor
+systemctl stop tor
 # Hash the new password and hash it,
 # then record the hash code to tor setting.
 inbashTorHashPWD=$(tor --hash-password "$newTorPWD" | tail -n 1)
 sed -i "/HashedControlPassword/s/.*/HashedControlPassword $inbashTorHashPWD/" /etc/tor/torrc
 # Restart tor server
-supervisorctl start tor
+systemctl start tor
 # Check new password legal or not.
 ## torVerifyResponse again. for Dev
 torVerifyResponse=$(echo -e "AUTHENTICATE \"$newTorPWD\"\r\nQUIT" | nc -q 1 127.0.0.1 9051 | head -n 1)
@@ -119,4 +133,33 @@ if [[ $torVerifyResponse != "250 OK" ]]; then
     echo "New password legal."
     exit 1
 fi
+# Make sure privoxy still working
+# Reset counter
+stateCounter=0
+while true; do
+    privoxyResponse=$(systemctl status privoxy)
+    case "$privoxyResponse" in
+    *"waiting"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "Privoxy failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for privoxy..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"running"*)
+        echo "Checked privoxy."
+        break
+        ;;
+    *"dead"*)
+        systemctl start privoxy
+        ;;
+    *)
+        echo "Unknown privoxy status:"
+        echo "$privoxyResponse"
+        ;;
+    esac
+done
 echo "TOR Hashed password updated successfully."
