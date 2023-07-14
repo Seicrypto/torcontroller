@@ -44,6 +44,14 @@ if [ ! -f /etc/supervisor/supervisord.conf.back ]; then
     supervisorctl reread
     supervisorctl update
 fi
-# remove any tmp files.
+# Remove any tmp files.
 rm -rf /tmp/torcontoller
+# Remove torcontroller directory.
+# if empty
+if [ -z "$(ls -A /usr/lib/torcontroller)" ]; then
+    rm -rf /usr/lib/torcontroller
+fi
+if [ -z "$(ls -A /usr/share/torcontroller)" ]; then
+    rm -rf /usr/share/torcontroller
+fi
 echo "postrm script fiinished."

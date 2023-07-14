@@ -1,10 +1,49 @@
 # torcontroller
 
-torcontroller
+Now version: 1.0-1
+
+torcontroller is packages which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts let you just command on Linux: Debian bullseye envirements including docker container.
+
+If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller-1.0>
+Read more
+
+[日本語説明](./READMEJP.md)
 
 ## QuickStart
 
-step
+### Linux
+
+step1. download
+
+```bash
+# mac cpu
+wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
+#
+#
+```
+
+step2. install
+```bash
+apt-get update
+# mac cpu
+apt-get install -y ./torcontroller_1.0-1_arm64.deb
+#
+#
+```
+
+### Control in docker container:
+
+Controll with Golang
+
+```golang
+
+```
+
+## Detail
+
+Read more torcontroller command:
+
+[torcontroller command list](./docs/commandList.md)
 
 ## Reference
 
