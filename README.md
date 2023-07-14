@@ -11,21 +11,28 @@ Read more
 
 ## QuickStart
 
+Use in:
+* [Linux](#linux)
+* [Docker container](#control-in-docker-container)
+
 ### Linux
+
+Now torcontroller suport on Linux Debian / Ubuntu else.
 
 step1. download
 
 ```bash
-# mac cpu
+# mac cpu:
 wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
 #
 #
 ```
 
 step2. install
+
 ```bash
 apt-get update
-# mac cpu
+# mac cpu:
 apt-get install -y ./torcontroller_1.0-1_arm64.deb
 #
 #
