@@ -51,7 +51,6 @@ install: all
 	install -D -m 555 ./installFiles/config $(DESTDIR)/tmp/torcontroller/config
 # Place docs
 	install -D -m 555 README.md $(DESTDIR)/usr/share/torcontroller/README.md
-	install -D -m 555 READMEJP.md $(DESTDIR)/usr/share/torcontroller/READMEJP.md
 # Makefile install finished.
 	@echo "torcontroller package Makefile worked successfully."
 clean:
