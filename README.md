@@ -2,7 +2,7 @@
 
 Now version: 1.0-1
 
-torcontroller is packages which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts let you just command on Linux: Debian bullseye environments including docker container. You will be able to run your application and control tor router by a function wrote any back-end program.
+torcontroller is a Debian package which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts to let you just command on Linux: Debian bullseye environments including docker container. You will be able to run your application and control tor router by a function that writes any back-end program.
 
 If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller-1.0>
 Read more
@@ -18,7 +18,7 @@ githubでこれを読んでいない場合は、<https://github.com/Seicrypto/to
 Use in:
 
 * [Linux Debian / Ubuntu](#linux)
-* [Docker container](#control-in-docker-container)
+* [Docker container](#use-in-docker-container)
 
 ### Linux
 
@@ -29,12 +29,14 @@ Step1. Download and install
 ```bash
 #!/bin/bash
 apt-get update
-# ARM cpu:
-wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
-apt-get install -y ./torcontroller_1.0-1_arm64.deb
+
 # Intel / AMD cpu:
-# wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_amd64.deb
-# apt-get install -y ./torcontroller_1.0-1_amd64.deb
+wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_amd64.deb
+apt-get install -y ./torcontroller_1.0-1_amd64.deb
+
+# ARM cpu:
+# wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
+# apt-get install -y ./torcontroller_1.0-1_arm64.deb
 
 # * How to know your machine using ARM or Intel / AMD
 # uname -m
@@ -49,6 +51,7 @@ Step2. Set up your AUTHENTICATE password
 #!/bin/bash
 torcontoller --version
 # torcontroller version 1.0
+
 torcontroller --resetpassword
 # torcontroller info ...
 # Enter old TOR password:
@@ -62,20 +65,14 @@ Step3. Check tor and privoxy feature
 torcontroller --start
 # log info...
 # Start command succeeded.
+
 curl -x 127.0.0.1:8118 http://icanhazip.com/
 # 176.10.99.200 (a example tor ip address)
 curl http://icanhazip.com/
 # 89.196.159.79 (a example your ture ip address)
 ```
 
-### Control in docker container:
-
-* [Controll with Golang](#golang-sample)
-* [Others program control sample](#other-program-sample)
-
-#### Golang sample
-
-Step1. Download and Install package
+### Use in docker container
 
 Please make sure your docker image base on debina.
 Such as bullseye, bookworm:
@@ -86,14 +83,25 @@ Such as bullseye, bookworm:
 * node:bullseye
 * so on...
 
+Step1. Download and Install package
+
 ```dockerfile
 # dockerfile
 # Recommend bullseye / bookworn ... else built according degina system.
 From golang:bullseye
-RUN apt-get update
+# Of course work for any programming you want,
+# just remmember use image: bullseye, bookworm, and so on.
+
 # Make sure there's wget in your docker image.
-RUN wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
-RUN apt-get install -y /app/torcontroller_1.0-1_arm64.deb
+RUN apt-get update
+
+# Intel / AMD cpu:
+RUN wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_amd64.deb
+RUN apt-get install -y /app/torcontroller_1.0-1_amd64.deb
+
+# ARM cpu:
+# RUN wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
+# RUN apt-get install -y /app/torcontroller_1.0-1_arm64.deb
 ```
 
 Step2. Set up your AUTHENTICATE password
@@ -102,25 +110,30 @@ Terminal (Recommend)
 
 ```bash
 # Terminal
-docker run -p 2043:9050 -p 2044:9051 <docker-image>
-# On terminal to control docker.
-# Of course you could control in golang func,
-# if you want.
-docker exec <your-container>
+# This sample using 9050 as socketPort, 9051 as controlPort on machine.
+docker run -it -p 9050:9050 -p 9051:9051 --name <your-container-name> <docker-image>
 
+# Check torcontroller installed properly.
+docker exec <your-container-name> torcontroller --version
+# torcontroller version X.X-X
+
+# On terminal to control docker.
+docker exec -i <your-container-name> torcontroller --resetpassword
+# torcontroller info ...
+# Enter old TOR password:
+# (torcontroller set as default password)
 ```
 
 Step3. Check tor and privoxy feature
 
-Call bash in your programing funtcion. You could build it by yourself or import it.
+Call bash in your programing function. You could build it by yourself or import it.
+
+Be careful! Use 127.0.0.1:8118 Port as proxy in your application. It would go through tor socket 9050 Port in your docker container.
+
 Example:
 
-* [Gotorcontroller]()
-* Other programing might update in future.
-
-#### Other program sample
-
-Coming soon.
+* [Golang: gotorcontroller](https://github.com/Seicrypto/gocontroller)
+* Other programming func lib might update in future.
 
 ## Detail
 
