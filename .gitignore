@@ -1,1 +1,9 @@
 dockerfile
+
+# Ignore debhelper log and stamp files
+.debhelper
+*.debhelper.log
+*.substvars
+/debian/torcontroller
+/debian/files
+debhelper-build-stamp

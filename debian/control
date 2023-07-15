@@ -2,13 +2,31 @@ Source: torcontroller
 Section: net
 Priority: optional
 Maintainer: Sei <seikanchintw@gmail.com>
-Build-Depends: debhelper-compat (= 12), nano, curl, netcat-traditional (>= 1.10-39), torsocks, tor(>= 0.4.2.7), privoxy(>= 3.0.28), procps, systemctl (>= 1.4)
+Build-Depends: curl,
+               debhelper-compat (= 12),
+               nano,
+               netcat-traditional (>= 1.10-39),
+               privoxy(>= 3.0.28),
+               procps,
+               systemctl (>= 1.4),
+               tor(>= 0.4.2.7),
+               torsocks
 Standards-Version: 4.4.0
 Homepage: <insert the upstream URL, if relevant>
 
 Package: torcontroller
 Architecture: any
-Depends: ${shlibs:Depends}, adduser, ${misc:Depends}, lsb-base, curl, netcat-traditional (>= 1.10-39), torsocks, tor(>= 0.4.2.7), privoxy(>= 3.0.28), procps, systemctl (>= 1.4)
+Depends: adduser,
+         curl,
+         lsb-base,
+         netcat-traditional (>= 1.10-39),
+         privoxy(>= 3.0.28),
+         procps,
+         systemctl (>= 1.4),
+         tor(>= 0.4.2.7),
+         torsocks,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Description: simple scripts for controlling tor and privoxy.
   This package conbine tor and privoxy packages.
