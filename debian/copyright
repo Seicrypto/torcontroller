@@ -1,9 +1,9 @@
 # copyright
 
-Format: 'https://github.com/Seicrypto/torcontroller-1.0'
-Upstream-Name: Debscripttest
+Format: 'http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/'
+Upstream-Name: Sei
 Upstream-Contact: Seikan Chin <seikanchintw@gmail.com>
-Source: 'https://github.com/Seicrypto/torcontroller-1.0'
+Source: 'https://github.com/Seicrypto/torcontroller'
 
 Files:     *
 Copyright: 2023 Seikan Chin <seikanchintw@gmail.com>
