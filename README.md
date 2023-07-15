@@ -11,6 +11,7 @@ torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせ
 
 githubでこれを読んでいない場合は、<https://github.com/Seicrypto/torcontroller>にアクセスしてください。
 
+Japanese README:
 [日本語説明こちら](./READMEJP.md)
 
 ## QuickStart
