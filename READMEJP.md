@@ -1,1 +1,3 @@
 # torcontroller Japanese 日本語説明
+
+torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせたパッケージです： docker コンテナを含む Debian bullseye 環境でコマンドを実行するだけです。任意のバックエンドプログラムを書いた関数で、アプリケーションを実行し、torルータを制御できるようになります。
