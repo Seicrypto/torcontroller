@@ -16,6 +16,7 @@ githubでこれを読んでいない場合は、<https://github.com/Seicrypto/to
 ## QuickStart
 
 Use in:
+
 * [Linux Debian / Ubuntu](#linux)
 * [Docker container](#control-in-docker-container)
 
@@ -88,7 +89,7 @@ Such as bullseye, bookworm:
 ```dockerfile
 # dockerfile
 # Recommend bullseye / bookworn ... else built according degina system.
-From Golang:bullseye
+From golang:bullseye
 RUN apt-get update
 # Make sure there's wget in your docker image.
 RUN wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
@@ -100,6 +101,8 @@ Step2. Set up your AUTHENTICATE password
 Terminal (Recommend)
 
 ```bash
+# Terminal
+docker run -p 2043:9050 -p 2044:9051 <docker-image>
 # On terminal to control docker.
 # Of course you could control in golang func,
 # if you want.
@@ -109,9 +112,11 @@ docker exec <your-container>
 
 Step3. Check tor and privoxy feature
 
-Call bash in your programing funtcion.
+Call bash in your programing funtcion. You could build it by yourself or import it.
 Example:
+
 * [Gotorcontroller]()
+* Other programing might update in future.
 
 #### Other program sample
 
