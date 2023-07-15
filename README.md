@@ -4,12 +4,12 @@ Now version: 1.0-1
 
 torcontroller is a Debian package which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts to let you just command on Linux: Debian bullseye environments including docker container. You will be able to run your application and control tor router by a function that writes any back-end program.
 
-If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller-1.0>
+If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller>
 Read more
 
 torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせたパッケージです： docker コンテナを含む Debian bullseye 環境でコマンドを実行するだけです。任意のバックエンドプログラムを書いた関数で、アプリケーションを実行し、torルータを制御できるようになります。
 
-githubでこれを読んでいない場合は、<https://github.com/Seicrypto/torcontroller-1.0>にアクセスしてください。
+githubでこれを読んでいない場合は、<https://github.com/Seicrypto/torcontroller>にアクセスしてください。
 
 [日本語説明こちら](./READMEJP.md)
 
@@ -31,11 +31,11 @@ Step1. Download and install
 apt-get update
 
 # Intel / AMD cpu:
-wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_amd64.deb
+wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_amd64.deb
 apt-get install -y ./torcontroller_1.0-1_amd64.deb
 
 # ARM cpu:
-# wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
+# wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_arm64.deb
 # apt-get install -y ./torcontroller_1.0-1_arm64.deb
 
 # * How to know your machine using ARM or Intel / AMD
@@ -50,7 +50,7 @@ Step2. Set up your AUTHENTICATE password
 ```bash
 #!/bin/bash
 torcontoller --version
-# torcontroller version 1.0
+# torcontroller version X.X
 
 torcontroller --resetpassword
 # torcontroller info ...
@@ -96,11 +96,11 @@ From golang:bullseye
 RUN apt-get update
 
 # Intel / AMD cpu:
-RUN wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_amd64.deb
+RUN wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_amd64.deb
 RUN apt-get install -y /app/torcontroller_1.0-1_amd64.deb
 
 # ARM cpu:
-# RUN wget https://github.com/Seicrypto/torcontroller-1.0/release/v1.0/torcontroller_1.0-1_arm64.deb
+# RUN wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_arm64.deb
 # RUN apt-get install -y /app/torcontroller_1.0-1_arm64.deb
 ```
 
