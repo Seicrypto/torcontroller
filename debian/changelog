@@ -1,0 +1,8 @@
+torcontroller (1.0-1) unstable; urgency=low
+
+  * Initial release. Closes: #nnnn
+    <nnnn is the bug number of your ITP>
+  * Release version 1.0-1 including basic features:
+    such as: start, stop, resetpassword, and so on.
+
+ -- ShengHan Chen <seikanchintw@gmail.com>  Sat, 15 Jul 2023 12:43:27 +0000
