@@ -1,0 +1,7 @@
+torcontroller (1.0-1) unstable; urgency=low
+
+  * Release version 1.0-1
+  * including basic features:
+  * start, stop, resetpassword, and so on.
+
+ -- ShengHan Chen <seikanchintw@gmail.com>  Sat, 15 Jul 2023 17:10:34 +0000
