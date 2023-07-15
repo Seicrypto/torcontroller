@@ -12,7 +12,7 @@ Build-Depends: curl,
                tor(>= 0.4.2.7),
                torsocks
 Standards-Version: 4.4.0
-Homepage: <insert the upstream URL, if relevant>
+Homepage: <https://github.com/Seicrypto/torcontroller>
 
 Package: torcontroller
 Architecture: any
@@ -29,5 +29,4 @@ Depends: adduser,
          ${shlibs:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Description: simple scripts for controlling tor and privoxy.
-  This package conbine tor and privoxy packages.
-  Built command scripts let user easilier to call tor features.
+  torcontroller is a Debian package which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts to let you just command on Linux: Debian bullseye environments including docker container. You will be able to run your application and control tor router by a function that writes any back-end program.
