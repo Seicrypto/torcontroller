@@ -39,13 +39,13 @@ fi
 # If supervisor user setting backup file existed,
 # replace it.
 if [ ! -f /etc/supervisor/supervisord.conf.back ]; then
-    cp /etc/supervisor/supervisord.conf.back /etc/supervisor/supervisord.conf.back
+    cp /etc/supervisor/supervisord.conf.back /etc/supervisor/supervisord.conf
     rm -f cp /etc/supervisor/supervisord.conf.back
     supervisorctl reread
     supervisorctl update
 fi
 # Remove any tmp files.
-rm -rf /usr/src/torcontroller/tmp/torcontoller
+rm -rf /usr/src/torcontroller/tmp
 # Remove torcontroller directory.
 # if empty
 if [ -z "$(ls -A /usr/lib/torcontroller)" ]; then

@@ -8,16 +8,16 @@ echo "torcontroller postinst setting script..."
 if [ -f /etc/systemd/system/privoxy.service ]; then
     cp /etc/systemd/system/privoxy.service /etc/systemd/system/privoxy.service.back
     rm -f /etc/systemd/system/privoxy.service
-    cp /usr/src/torcontroller/tmp/torcontroller/privoxy.service /etc/systemd/system/privoxy.service
+    cp /usr/src/torcontroller/tmp/privoxy.service /etc/systemd/system/privoxy.service
 else
-    cp /usr/src/torcontroller/tmp/torcontroller/privoxy.service /etc/systemd/system/privoxy.service
+    cp /usr/src/torcontroller/tmp/privoxy.service /etc/systemd/system/privoxy.service
 fi
 if [ -f /etc/systemd/system/tor.service ]; then
     cp /etc/systemd/system/tor.service /etc/systemd/system/tor.service.back
     rm -f /etc/systemd/system/tor.service
-    cp /usr/src/torcontroller/tmp/torcontroller/tor.service /etc/systemd/system/tor.service
+    cp /usr/src/torcontroller/tmp/tor.service /etc/systemd/system/tor.service
 else
-    cp /usr/src/torcontroller/tmp/torcontroller/tor.service /etc/systemd/system/tor.service
+    cp /usr/src/torcontroller/tmp/tor.service /etc/systemd/system/tor.service
 fi
 # Check and start tor / privoxy service should be stopped.
 # Check tor / privoxy systemd setting.
@@ -83,9 +83,9 @@ done
 # For new tor and privoxy files still complex,
 # torcontroller back up user's origin setting.
 if [ -f /etc/tor/torrc ]; then cp /etc/tor/torrc /etc/tor/torrc.back; fi
-cp /usr/src/torcontroller/tmp/torcontroller/torrc /etc/tor/torrc
+cp /usr/src/torcontroller/tmp/torrc /etc/tor/torrc
 if [ -f /etc/privoxy/config ]; then cp /etc/privoxy/config /etc/privoxy/config.back; fi
-cp /usr/src/torcontroller/tmp/torcontroller/config /etc/privoxy/config
+cp /usr/src/torcontroller/tmp/config /etc/privoxy/config
 # set 'torcontroller' as the default tor authentication password.
 hashTorPWD=$(tor --hash-password "torcontroller" | tail -n 1)
 sed -i "/HashedControlPassword/s/.*/HashedControlPassword $hashTorPWD/" /etc/tor/torrc
