@@ -45,10 +45,10 @@ install: all
 	install -D -m 555 ./lib/stopTorcontrol.sh  $(DESTDIR)/usr/lib/torcontroller/stopTorcontrol.sh
 	install -D -m 555 ./lib/switchTorRouter.sh  $(DESTDIR)/usr/lib/torcontroller/switchTorRouter.sh
 # Place setting files for tor, privoxy's config, and supervisor.
-	install -D -m 555 ./installFiles/tor.service $(DESTDIR)/tmp/torcontroller/tor.service
-	install -D -m 555 ./installFiles/privoxy.service $(DESTDIR)/tmp/torcontroller/privoxy.service
-	install -D -m 555 ./installFiles/torrc $(DESTDIR)/tmp/torcontroller/torrc
-	install -D -m 555 ./installFiles/config $(DESTDIR)/tmp/torcontroller/config
+	install -D -m 555 ./installFiles/tor.service $(DESTDIR)/usr/src/torcontroller/tmp/tor.service
+	install -D -m 555 ./installFiles/privoxy.service $(DESTDIR)/usr/src/torcontroller/tmp/privoxy.service
+	install -D -m 555 ./installFiles/torrc $(DESTDIR)/usr/src/torcontroller/tmp/torrc
+	install -D -m 555 ./installFiles/config $(DESTDIR)/usr/src/torcontroller/tmp/config
 # Place docs
 	install -D -m 555 README.md $(DESTDIR)/usr/share/torcontroller/README.md
 # Makefile install finished.

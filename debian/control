@@ -11,14 +11,12 @@ Build-Depends: curl,
                systemctl (>= 1.4),
                tor(>= 0.4.2.7),
                torsocks
-Standards-Version: 1.0
+Standards-Version: 4.4.0
 Homepage: <https://github.com/Seicrypto/torcontroller>
 
 Package: torcontroller
 Architecture: any
-Depends: adduser,
-         curl,
-         lsb-base,
+Depends: curl,
          netcat-traditional (>= 1.10-39),
          privoxy(>= 3.0.28),
          procps,
