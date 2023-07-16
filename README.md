@@ -75,7 +75,7 @@ curl http://icanhazip.com/
 
 ### Use in docker container
 
-Please make sure your docker image base on debina.
+Please make sure your docker image base on debian.
 Such as bullseye, bookworm:
 
 * golang:bullseye
@@ -92,6 +92,7 @@ Step1. Download and Install package
 From golang:bullseye
 # Of course work for any programming you want,
 # just remmember use image: bullseye, bookworm, and so on.
+WORKDIR /app
 
 # Make sure there's wget in your docker image.
 RUN apt-get update
@@ -99,6 +100,7 @@ RUN apt-get update
 # Intel / AMD cpu:
 RUN wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0-1/torcontroller_1.0-1_amd64.deb
 RUN apt-get install -y /app/torcontroller_1.0-1_amd64.deb
+# Be careful about your download and install path.
 
 # ARM cpu:
 # RUN wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0-1/torcontroller_1.0-1_arm64.deb
