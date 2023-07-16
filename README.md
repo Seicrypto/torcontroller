@@ -32,11 +32,11 @@ Step1. Download and install
 apt-get update
 
 # Intel / AMD cpu:
-wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_amd64.deb
+wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0-1/torcontroller_1.0-1_amd64.deb
 apt-get install -y ./torcontroller_1.0-1_amd64.deb
 
 # ARM cpu:
-# wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_arm64.deb
+# wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0-1/torcontroller_1.0-1_arm64.deb
 # apt-get install -y ./torcontroller_1.0-1_arm64.deb
 
 # * How to know your machine using ARM or Intel / AMD
@@ -97,11 +97,11 @@ From golang:bullseye
 RUN apt-get update
 
 # Intel / AMD cpu:
-RUN wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_amd64.deb
+RUN wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0-1/torcontroller_1.0-1_amd64.deb
 RUN apt-get install -y /app/torcontroller_1.0-1_amd64.deb
 
 # ARM cpu:
-# RUN wget https://github.com/Seicrypto/torcontroller/release/v1.0/torcontroller_1.0-1_arm64.deb
+# RUN wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0-1/torcontroller_1.0-1_arm64.deb
 # RUN apt-get install -y /app/torcontroller_1.0-1_arm64.deb
 ```
 
