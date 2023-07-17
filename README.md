@@ -1,11 +1,19 @@
 # torcontroller
 
+![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+
 Now version: 1.0-1
+
+[![Badge](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSeicrypto%2Fgotorcontroller&count_bg=%236DAC3D&title_bg=%23555555&icon=grafana.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://github.com/Seicrypto/gotorcontroller)
+
+What is [tor](https://www.torproject.org/)? "The Onion Router," is free and open-source software for enabling anonymous communication.
 
 torcontroller is a Debian package which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts to let you just command on Linux: Debian bullseye environments including docker container. You will be able to run your application and control tor router by a function that writes any back-end program.
 
 If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller>
 Read more
+
+[tor](https://www.torproject.org/)とは？「オニオン・ルーター（The Onion Router）」は、匿名通信を可能にするフリーでオープンソースのソフトウェアです。
 
 torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせたパッケージです： docker コンテナを含む Debian bullseye 環境でコマンドを実行するだけです。任意のバックエンドプログラムを書いた関数で、アプリケーションを実行し、torルータを制御できるようになります。
 
