@@ -1,7 +1,5 @@
 # torcontroller
 
-![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-
 Now version: 1.0-1
 
 [![Badge](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSeicrypto%2Fgotorcontroller&count_bg=%236DAC3D&title_bg=%23555555&icon=grafana.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://github.com/Seicrypto/gotorcontroller)
@@ -30,6 +28,8 @@ Use in:
 * [Docker container](#use-in-docker-container)
 
 ### Linux
+
+![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 
 Now torcontroller suport on Linux Debian / Ubuntu else.
 
@@ -82,6 +82,8 @@ curl http://icanhazip.com/
 ```
 
 ### Use in docker container
+
+ ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
 Please make sure your docker image base on debian.
 Such as bullseye, bookworm:
@@ -143,7 +145,7 @@ Be careful! Use 127.0.0.1:8118 Port as proxy in your application. It would go th
 
 Example:
 
-* [Golang: gotorcontroller](https://github.com/Seicrypto/gocontroller)
+* ![golang](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white) [Golang: gotorcontroller](https://github.com/Seicrypto/gocontroller)
 * Other programming func lib might update in future.
 
 ## Detail

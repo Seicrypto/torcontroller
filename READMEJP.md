@@ -1,5 +1,7 @@
 # torcontroller Japanese 日本語説明
 
+[![Badge](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSeicrypto%2Fgotorcontroller&count_bg=%236DAC3D&title_bg=%23555555&icon=grafana.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://github.com/Seicrypto/gotorcontroller)
+
 [tor](https://www.torproject.org/)とは？「オニオン・ルーター（The Onion Router）」は、匿名通信を可能にするフリーでオープンソースのソフトウェアです。
 
 torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせたパッケージです： docker コンテナを含む Debian bullseye 環境でコマンドを実行するだけです。任意のバックエンドプログラムを書いた関数で、アプリケーションを実行し、torルータを制御できるようになります。
@@ -12,6 +14,8 @@ torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせ
 * [Docker コンテナ](#dockerドッカーコンテナで使用する)
 
 ### Linux
+
+![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 
 Now torcontroller suport on Linux Debian / Ubuntu.
 LinuxのDebian / Ubuntuでtorcontrollerが使える。
@@ -65,6 +69,8 @@ curl http://icanhazip.com/
 ```
 
 ### Dockerドッカーコンテナで使用する
+
+ ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
 ドッカーイメージがdebianベースであることを確認してください。
 bullseye, bookwormなど:
@@ -126,7 +132,7 @@ Step3. torとprivoxyの機能をチェック
 
 Example:
 
-* [Golang: gotorcontroller](https://github.com/Seicrypto/gocontroller)
+* ![golang](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white) [Golang: gotorcontroller](https://github.com/Seicrypto/gocontroller)
 * 今後、他のプログラミング・ファンク・ライブラリが更新されるかもしれない。
 
 ## 詳細はこちら
