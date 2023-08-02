@@ -57,7 +57,7 @@ while true; do
         systemctl stop privoxy
         break
         ;;
-    *"STOPPED"*)
+    *"dead"*)
         echo "privoxy already stopped."
         break
         ;;
