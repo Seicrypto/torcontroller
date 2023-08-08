@@ -1,16 +1,19 @@
 #!/bin/sh
+# If any error, exit.
+set -e
 # Make sure tor and privoxy service already stopped.
 privoxyResponse=$(systemctl status privoxy)
 case "$privoxyResponse" in
 *"running"*)
     supervisorctl stop privoxy
     ;;
-*"dead"* | *"failed"*)
+*"dead"* | *"failed"* | *"disable"*)
     kill $(pidof privoxy) || true
     echo "Privoxy stopped."
     ;;
 *)
     echo "Unknown privoxy program status!"
+    exit 1
     ;;
 esac
 torResponse=$(systemctl status tor)
@@ -18,12 +21,13 @@ case "$torResponse" in
 *"running"*)
     systemctl stop tor
     ;;
-*"dead"* | *"failed"*)
+*"dead"* | *"failed"* | *"disable"*)
     kill $(pidof tor) || true
     echo "Tor stopped."
     ;;
 *)
     echo "Unknown privoxy program status!"
+    exit 1
     ;;
 esac
 # If torrc and privoxy backup file existed,
@@ -58,3 +62,6 @@ if [ -z "$(ls -A /usr/src/torcontroller)" ]; then
     rm -rf /usr/src/torcontroller
 fi
 echo "postrm script fiinished."
+
+#DEBHELPLER#
+exit 0

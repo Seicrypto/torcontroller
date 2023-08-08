@@ -45,12 +45,12 @@ install: all
 	install -D -m 555 ./lib/stopTorcontrol.sh  $(DESTDIR)/usr/lib/torcontroller/stopTorcontrol.sh
 	install -D -m 555 ./lib/switchTorRouter.sh  $(DESTDIR)/usr/lib/torcontroller/switchTorRouter.sh
 # Place setting files for tor, privoxy's config, and supervisor.
-	install -D -m 555 ./etc/tor.service $(DESTDIR)/usr/src/torcontroller/tmp/tor.service
-	install -D -m 555 ./etc/privoxy.service $(DESTDIR)/usr/src/torcontroller/tmp/privoxy.service
-	install -D -m 555 ./etc/torrc $(DESTDIR)/usr/src/torcontroller/tmp/torrc
-	install -D -m 555 ./etc/config $(DESTDIR)/usr/src/torcontroller/tmp/config
+	install -D -m 644 ./etc/tor.service $(DESTDIR)/usr/src/torcontroller/tmp/tor.service
+	install -D -m 644 ./etc/privoxy.service $(DESTDIR)/usr/src/torcontroller/tmp/privoxy.service
+	install -D -m 644 ./etc/torrc $(DESTDIR)/usr/src/torcontroller/tmp/torrc
+	install -D -m 644 ./etc/config $(DESTDIR)/usr/src/torcontroller/tmp/config
 # Place docs
-	install -D -m 555 README.md $(DESTDIR)/usr/share/torcontroller/README.md
+	install -D -m 644 README.md $(DESTDIR)/usr/share/doc/torcontroller/README.md
 # Makefile install finished.
 	@echo "torcontroller package Makefile worked successfully."
 clean:
@@ -68,7 +68,6 @@ uninstall:
 	rm -f $(DESTDIR)/usr/lib/torcontroller/startTorcontrol.sh
 	rm -f $(DESTDIR)/usr/lib/torcontroller/stopTorcontrol.sh
 	rm -f $(DESTDIR)/usr/lib/torcontroller/switchTorRouter.sh
-	rm -f $(DESTDIR)/usr/share/torcontroller/README.md
-	rm -f $(DESTDIR)/usr/share/torcontroller/READMEJP.md
+	rm -f $(DESTDIR)/usr/share/doc/torcontroller/README.md
 # If it was empty after unistalled,
 # directory would be remove by postrm script.

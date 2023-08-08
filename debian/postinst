@@ -1,4 +1,7 @@
 #!/bin/sh
+# If any error, exit.
+set -e
+
 echo "torcontroller postinst setting script..."
 # Place systemctl setting file.
 # torcontoller would build tor.service and privoxy.service files.
@@ -92,3 +95,6 @@ sed -i "/HashedControlPassword/s/.*/HashedControlPassword $hashTorPWD/" /etc/tor
 unset hashTorPWD
 rm -rf /usr/src/torcontroller/tmp
 echo "postinst script finished."
+
+#DEBHELPLER#
+exit 0
