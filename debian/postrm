@@ -7,7 +7,7 @@ case "$privoxyResponse" in
 *"running"*)
     supervisorctl stop privoxy
     ;;
-*"dead"* | *"failed"* | *"disable"*)
+*"dead"* | *"failed"* | *"disabled"*)
     kill $(pidof privoxy) || true
     echo "Privoxy stopped."
     ;;
@@ -21,7 +21,7 @@ case "$torResponse" in
 *"running"*)
     systemctl stop tor
     ;;
-*"dead"* | *"failed"* | *"disable"*)
+*"dead"* | *"failed"* | *"disabled"*)
     kill $(pidof tor) || true
     echo "Tor stopped."
     ;;

@@ -27,7 +27,7 @@ fi
 while true; do
     torResponse=$(systemctl status tor 2>&1)
     case "$torResponse" in
-    *"disable"*)
+    *"disabled"*)
         systemctl enable tor || echo "Failed to enable tor" >&2
         systemctl stop tor || echo "Failed to stop tor" >&2
         break
@@ -51,7 +51,7 @@ done
 while true; do
     privoxyResponse=$(systemctl status privoxy 2>&1)
     case "$privoxyResponse" in
-    *"disable"*)
+    *"disabled"*)
         systemctl enable privoxy || echo "Failed to enable privoxy" >&2
         systemctl stop privoxy || echo "Failed to stop privoxy" >&2
         break
