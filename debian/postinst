@@ -24,16 +24,16 @@ else
 fi
 # Check and start tor / privoxy service should be stopped.
 # Check tor / privoxy systemd setting.
-torResponse=$(systemctl status tor 2>&1)
-case "$torResponse" in
-*"disabled"*)
+torResponse="$(systemctl status tor 2>&1)"
+case $torResponse in
+*disabled*)
     systemctl enable tor || echo "Failed to enable tor" >&2
     systemctl stop tor || echo "Failed to stop tor" >&2
     ;;
-*"running"*)
+*running*)
     systemctl stop tor
     ;;
-*"dead"*)
+*dead*)
     echo "Tor already stopped."
     ;;
 *)
