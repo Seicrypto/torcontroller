@@ -1,6 +1,6 @@
 #!/bin/sh
 # If any error, exit.
-set -e
+set -xe
 
 echo "torcontroller postinst setting script..."
 # Place systemctl setting file.
