@@ -24,30 +24,25 @@ else
 fi
 # Check and start tor / privoxy service should be stopped.
 # Check tor / privoxy systemd setting.
-while true; do
-    torResponse=$(systemctl status tor 2>&1)
-    case "$torResponse" in
-    *"disabled"*)
-        systemctl enable tor || echo "Failed to enable tor" >&2
-        systemctl stop tor || echo "Failed to stop tor" >&2
-        break
-        ;;
-    *"running"*)
-        systemctl stop tor
-        break
-        ;;
-    *"dead"*)
-        echo "Tor already stopped."
-        break
-        ;;
-    *)
-        echo "Unknown tor program status! Response:"
-        #print what is wrong.
-        echo "$torResponse"
-        exit 1
-        ;;
-    esac
-done
+torResponse=$(systemctl status tor 2>&1)
+case "$torResponse" in
+*"disabled"*)
+    systemctl enable tor || echo "Failed to enable tor" >&2
+    systemctl stop tor || echo "Failed to stop tor" >&2
+    ;;
+*"running"*)
+    systemctl stop tor
+    ;;
+*"dead"*)
+    echo "Tor already stopped."
+    ;;
+*)
+    echo "Unknown tor program status! Response:"
+    #print what is wrong.
+    echo "$torResponse"
+    exit 1
+    ;;
+esac
 while true; do
     privoxyResponse=$(systemctl status privoxy 2>&1)
     case "$privoxyResponse" in
