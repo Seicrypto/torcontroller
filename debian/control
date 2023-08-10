@@ -23,8 +23,7 @@ Depends: curl,
          systemctl (>= 1.4),
          tor(>= 0.4.2.7),
          torsocks,
-         ${misc:Depends},
-         ${shlibs:Depends}
+         ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Description: Using different IP addresses through TOR structure under Debian
   torcontroller is a Debian package which combines tor, privoxy, and so on.
