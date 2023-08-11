@@ -64,4 +64,3 @@ fi
 echo "postrm script fiinished."
 
 #DEBHELPLER#
-exit 0
