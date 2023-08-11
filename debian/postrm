@@ -1,6 +1,6 @@
 #!/bin/sh
 # If any error, exit.
-set -xe
+# set -xe
 # Make sure tor and privoxy service already stopped.
 privoxyResponse=$(systemctl status privoxy)
 case "$privoxyResponse" in

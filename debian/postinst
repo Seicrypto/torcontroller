@@ -1,6 +1,6 @@
 #!/bin/sh
-# If any error, exit.
-set -xe
+# If any error, exit. Fix in future
+# set -xe
 
 echo "torcontroller postinst setting script..."
 # Place systemctl setting file.
@@ -22,60 +22,55 @@ if [ -f /etc/systemd/system/tor.service ]; then
 else
     cp /usr/src/torcontroller/tmp/tor.service /etc/systemd/system/tor.service
 fi
-# Check and start tor / privoxy service should be stopped.
-# Check tor / privoxy systemd setting.
-# torResponse=$(systemctl status tor 2>&1)
-# if [ "$torResponse#*disabled" != "$torResponse" ]; then
-#     systemctl enable tor || echo "Failed to enable tor" >&2
-#     systemctl stop tor || echo "Failed to stop tor" >&2
-# elif [ "$torResponse#*running" != "$torResponse" ]; then
-#     systemctl stop tor || echo "Failed to stop tor" >&2
-# elif [ "$torResponse#*dead" != "$torResponse" ]; then
-#     echo "Tor already stopped."
-# else
-#     echo "Unknown tor program status! Response:"
-#     #print what is wrong.
-#     echo "$torResponse"
-#     exit 1
-# fi
-# stateCounter=0
-# while true; do
-#     torResponse=$(systemctl status tor 2>&1)
-#     case $torResponse in
-#     *waiting*)
-#         if [ $stateCounter -ge 60 ]; then
-#             echo "tor failed to start within 60 seconds, exiting."
-#             exit 1
-#         fi
-#         echo "Waiting for tor..."
-#         sleep 1
-#         stateCounter=$(($stateCounter + 1))
-#         continue
-#         ;;
-#     *disabled*)
-#         systemctl enable tor || echo "Failed to enable tor" >&2
-#         systemctl stop tor || echo "Failed to stop tor" >&2
-#         break
-#         ;;
-#     *running*)
-#         systemctl stop tor || echo "Failed to stop tor" >&2
-#         break
-#         ;;
-#     *dead*)
-#         echo "Tor already stopped."
-#         break
-#         ;;
-#     *)
-#         echo "Unknown tor program status! Response:"
-#         #print what is wrong.
-#         echo "$torResponse"
-#         exit 1
-#         ;;
-#     esac
-# done
+stateCounter=0
+while true; do
+    torResponse=$(systemctl status tor 2>&1)
+    case $torResponse in
+    *"waiting"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "tor failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for tor..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
+    *"disabled"*)
+        systemctl enable tor || echo "Failed to enable tor" >&2
+        systemctl stop tor || echo "Failed to stop tor" >&2
+        break
+        ;;
+    *"running"*)
+        systemctl stop tor || echo "Failed to stop tor" >&2
+        break
+        ;;
+    *"dead"*)
+        echo "Tor already stopped."
+        break
+        ;;
+    *)
+        echo "Unknown tor program status! Response:"
+        #print what is wrong.
+        echo "$torResponse"
+        exit 1
+        ;;
+    esac
+done
+stateCounter=0
 while true; do
     privoxyResponse=$(systemctl status privoxy 2>&1)
     case "$privoxyResponse" in
+    *"waiting"*)
+        if [ $stateCounter -ge 60 ]; then
+            echo "privoxy failed to start within 60 seconds, exiting."
+            exit 1
+        fi
+        echo "Waiting for privoxy..."
+        sleep 1
+        stateCounter=$(($stateCounter + 1))
+        continue
+        ;;
     *"disabled"*)
         echo "Privoxy status disabled."
         systemctl enable privoxy || echo "Failed to enable privoxy" >&2
