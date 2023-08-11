@@ -72,18 +72,15 @@ while true; do
         continue
         ;;
     *"disabled"*)
-        echo "Privoxy status disabled."
         systemctl enable privoxy || echo "Failed to enable privoxy" >&2
         systemctl stop privoxy || echo "Failed to stop privoxy" >&2
         break
         ;;
     *"running"*)
-        echo "Privoxy status running."
         systemctl stop privoxy
         break
         ;;
     *"dead"*)
-        echo "Privoxy status dead."
         echo "privoxy already stopped."
         break
         ;;
