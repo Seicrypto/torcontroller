@@ -20,7 +20,9 @@ UML sequence diagram with mermaid:
 ```mermaid
 sequenceDiagram
 %% Declaration
+    box blue Your sources
     participant usr as Back-End Applications
+    end
     box green torcontroller
     participant pv as Privoxy
     participant tor as TOR server nodes
@@ -41,7 +43,7 @@ sequenceDiagram
     pv->>usr: response data
 ```
 
-Actually, there are mour feature with privoxy and TOR. If you were interested in privoxy and TOR features, please visit thier sites. torcontroller only simple scripts to controll them.
+Actually, there are more feature with privoxy and TOR. If you were interested in privoxy and TOR features, please visit thier sites. torcontroller only simple scripts to controll them.
 
 ## QuickStart
 
