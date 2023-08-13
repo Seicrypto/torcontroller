@@ -10,14 +10,38 @@ torcontroller is a Debian package which combines tor, privoxy, systemctl package
 If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller>
 Read more
 
-[tor](https://www.torproject.org/)とは？「オニオン・ルーター（The Onion Router）」は、匿名通信を可能にするフリーでオープンソースのソフトウェアです。
-
-torcontrollerはtor、privoxy、systemctlパッケージなどを組み合わせたパッケージです： docker コンテナを含む Debian bullseye 環境でコマンドを実行するだけです。任意のバックエンドプログラムを書いた関数で、アプリケーションを実行し、torルータを制御できるようになります。
-
-githubでこれを読んでいない場合は、<https://github.com/Seicrypto/torcontroller>にアクセスしてください。
-
 Japanese README:
 [日本語説明こちら](./READMEJP.md)
+
+## What does torcontroller do?
+
+UML sequence diagram with mermaid:
+
+```mermaid
+sequenceDiagram
+%% Declaration
+    participant usr as Back-End Applications
+    box green torcontroller
+    participant pv as Privoxy
+    participant tor as TOR server nodes
+    end
+    participant tg as Target (Domain/IP)
+%% Relation
+    usr->>pv: request, 8118 port
+    Note over pv: non-caching
+    Note over pv: modifying HTTP headers
+    pv->>tor: socket, 9050 port
+    Note over tor: wrap IP address
+    tor->>tg: CRUD
+    tg->>tor: response
+    Note over tor: Auth
+    tor->>pv: response
+    Note over pv: Controlling access
+    Note over pv: Blocking tracking
+    pv->>usr: response data
+```
+
+Actually, there are mour feature with privoxy and TOR. If you were interested in privoxy and TOR features, please visit thier sites. torcontroller only simple scripts to controll them.
 
 ## QuickStart
 
