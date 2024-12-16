@@ -1,4 +1,7 @@
 dockerfile
+dockerfile.*
+
+backup/**
 
 # Ignore debhelper log and stamp files
 .debhelper
