@@ -1,0 +1,36 @@
+name: Torcontroller CI
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  run-test:
+
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye
+
+    steps:
+    - name: Actions Checkout
+      uses: actions/checkout@v3
+
+    - name: Install Dependencies
+      run: |
+        apt update && apt-get dist-upgrade -y
+        apt install -y curl nano netcat tor privoxy procps systemctl iproute2 net-tools
+
+    - name: Setup Golang
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.21.13'
+
+    - name: Build for Test
+      run: |
+        GOARCH=$(uname -m | grep -q 'aarch64' && echo "arm64" || echo "amd64")
+        GOOS=linux GOARCH=$GOARCH go build -o torcontroller
+
+    - name: Run unit test
+      run: go test -v ./...
