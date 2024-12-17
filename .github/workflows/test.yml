@@ -1,29 +1,24 @@
-name: Torcontroller CI
+name: Torcontroller Test
 
 on:
   push:
     branches: [ main, master, dev ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, dev ]
 
 jobs:
   run-test:
     runs-on: ubuntu-22.04
-    container:
-      image: ghcr.io/seicrypto/torcontroller/torcontroller-test-env:dev
 
     steps:
-    - name: List Docker images
-      run: docker images
-
-    - name: List running Docker containers
-      run: docker ps -a
+    - name: Use Custom Test Env
+      uses: docker://ghcr.io/seicrypto/torcontroller/torcontroller-test-env:dev
 
     - name: Actions Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Golang
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version: '1.21.13'
 
