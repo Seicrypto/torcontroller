@@ -13,5 +13,3 @@ RUN apt install -y curl\
     systemctl\
     iproute2\
     net-tools
-
-CMD ["sleep", "infinity"]

@@ -9,11 +9,10 @@ on:
 jobs:
   run-test:
     runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/seicrypto/torcontroller/torcontroller-test-env:dev
 
     steps:
-    - name: Use Custom Test Env
-      uses: docker://ghcr.io/seicrypto/torcontroller/torcontroller-test-env:dev
-
     - name: Actions Checkout
       uses: actions/checkout@v4
 
