@@ -23,6 +23,7 @@ jobs:
 
     - name: Build for Test
       run: |
+        [ -f torcontroller ] && rm torcontroller
         GOARCH=$(uname -m | grep -q 'aarch64' && echo "arm64" || echo "amd64")
         GOOS=linux GOARCH=$GOARCH go build -o torcontroller
 
