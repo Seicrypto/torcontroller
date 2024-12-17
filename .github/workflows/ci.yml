@@ -8,19 +8,13 @@ on:
 
 jobs:
   run-test:
-
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye
+      image: ghcr.io/seicrypto/torcontroller/torcontroller-test-env:1.1.0
 
     steps:
     - name: Actions Checkout
       uses: actions/checkout@v3
-
-    - name: Install Dependencies
-      run: |
-        apt update && apt-get dist-upgrade -y
-        apt install -y curl nano netcat tor privoxy procps systemctl iproute2 net-tools
 
     - name: Setup Golang
       uses: actions/setup-go@v3

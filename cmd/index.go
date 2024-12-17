@@ -19,7 +19,6 @@ func InitCommands() *cobra.Command {
 		versionCmd,
 		startCmd,
 		startBackgroundCmd,
-		statusCmd,
 		stopCmd,
 	)
 	return rootCmd

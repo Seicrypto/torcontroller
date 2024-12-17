@@ -1,0 +1,15 @@
+FROM debian:bullseye
+WORKDIR /app
+
+RUN apt update \
+    && apt-get dist-upgrade -y
+
+RUN apt install -y curl\
+    nano\
+    netcat\
+    tor\
+    privoxy\
+    procps\
+    systemctl\
+    iproute2\
+    net-tools
