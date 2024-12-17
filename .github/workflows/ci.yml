@@ -8,11 +8,17 @@ on:
 
 jobs:
   run-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/seicrypto/torcontroller/torcontroller-test-env:dev
 
     steps:
+    - name: List Docker images
+      run: docker images
+
+    - name: List running Docker containers
+      run: docker ps -a
+
     - name: Actions Checkout
       uses: actions/checkout@v3
 
