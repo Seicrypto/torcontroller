@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"net"
 	"os"
 
@@ -14,11 +13,7 @@ var startBackgroundCmd = &cobra.Command{
 	Short: "Start Torcontroller listener as a background process",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger, err := logger.CreateLogger()
-		if err != nil {
-			fmt.Println("Error creating logger:", err)
-			return
-		}
+		logger := logger.GetLogger()
 		logger.Printf("Listener started successfully at %s.\n", socketPath)
 		os.Remove(socketPath)
 		listener, err := net.Listen("unix", socketPath)

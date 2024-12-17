@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/Seicrypto/torcontroller/internal/services/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -41,9 +42,10 @@ var stopCmd = &cobra.Command{
 			return
 		}
 
-		// 清理 PID 文件
+		os.Remove(socketPath)
 		os.Remove(pidFile)
-
+		logger := logger.GetLogger()
+		logger.Printf("Torcontroller listener at %s stopped successfully.\n", socketPath)
 		fmt.Printf("Torcontroller listener at %s stopped successfully.\n", socketPath)
 	},
 }
