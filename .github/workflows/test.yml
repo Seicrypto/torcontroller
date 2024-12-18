@@ -25,7 +25,7 @@ jobs:
       run: |
         [ -f torcontroller ] && rm torcontroller
         GOARCH=$(uname -m | grep -q 'aarch64' && echo "arm64" || echo "amd64")
-        GOOS=linux GOARCH=$GOARCH go build -o torcontroller
+        GOOS=linux GOARCH=$GOARCH go build -buildvcs=false -o torcontroller
 
     - name: Run unit test
       run: go test -v -coverprofile=coverage.out ./...
