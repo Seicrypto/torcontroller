@@ -1,4 +1,4 @@
-name: Torcontroller Test
+name: Unit Test
 
 on:
   push:
@@ -28,4 +28,7 @@ jobs:
         GOOS=linux GOARCH=$GOARCH go build -o torcontroller
 
     - name: Run unit test
-      run: go test -v ./...
+      run: go test -v -coverprofile=coverage.out ./...
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
