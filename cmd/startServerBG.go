@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 
@@ -34,12 +36,21 @@ var StartBackgroundCmd = &cobra.Command{
 			logger.Info("Waiting for connection...")
 			conn, err := listener.Accept()
 			if err != nil {
-				logger.Warn(fmt.Sprintf("Error accepting connection: %v\n", err))
+				if errors.Is(err, io.EOF) {
+					logger.Warn("Client closed the connection.")
+					continue
+				}
+				logger.Error(fmt.Sprintf("Error accepting connection: %v", err))
 				continue
 			}
 			logger.Info("Connection established")
 
-			go controller.HandleConnection(conn, socketPath, listener)
+			// go controller.HandleConnection(conn, socketPath, listener)
+			go func(c net.Conn) {
+				if err := controller.HandleConnection(c, socketPath, listener); err != nil {
+					logger.Error(fmt.Sprintf("Error handling connection: %v", err))
+				}
+			}(conn)
 		}
 	},
 }

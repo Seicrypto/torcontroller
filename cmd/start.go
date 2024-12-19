@@ -67,27 +67,17 @@ var StartCmd = &cobra.Command{
 			return
 		}
 
-		// Create "start" connection to socket
-		conn, err := net.Dial("unix", socketPath)
-		if err != nil {
-			fmt.Printf("Error connecting to socket: %v\n", err)
-			return
+		// Use SocketInteractionHandler to send commands
+		handler := &SocketInteractionHandler{
+			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
 		}
-		defer conn.Close()
 
-		_, err = conn.Write([]byte("start"))
+		response, err := handler.SendCommand("start")
 		if err != nil {
 			fmt.Printf("Error sending command: %v\n", err)
 			return
 		}
 
-		buf := make([]byte, 1024)
-		n, err := conn.Read(buf)
-		if err != nil {
-			fmt.Printf("Error reading response: %v\n", err)
-			return
-		}
-
-		fmt.Printf("Response: %s\n", string(buf[:n]))
+		fmt.Printf("Response: %s\n", response)
 	},
 }
