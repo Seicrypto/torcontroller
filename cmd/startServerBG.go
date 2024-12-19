@@ -4,11 +4,12 @@ import (
 	"net"
 	"os"
 
+	"github.com/Seicrypto/torcontroller/internal/controller"
 	"github.com/Seicrypto/torcontroller/internal/services/logger"
 	"github.com/spf13/cobra"
 )
 
-var startBackgroundCmd = &cobra.Command{
+var StartBackgroundCmd = &cobra.Command{
 	Use:   "start-background",
 	Short: "Start Torcontroller listener as a background process",
 	Args:  cobra.NoArgs,
@@ -37,22 +38,23 @@ var startBackgroundCmd = &cobra.Command{
 			}
 			logger.Println("Connection established")
 
-			go func(c net.Conn) {
-				defer c.Close()
-				buf := make([]byte, 1024)
-				n, err := c.Read(buf)
-				if err != nil {
-					logger.Printf("Error reading from connection: %v\n", err)
-					return
-				}
+			go controller.HandleConnection(conn, socketPath, listener)
+			// go func(c net.Conn) {
+			// 	defer c.Close()
+			// 	buf := make([]byte, 1024)
+			// 	n, err := c.Read(buf)
+			// 	if err != nil {
+			// 		logger.Printf("Error reading from connection: %v\n", err)
+			// 		return
+			// 	}
 
-				logger.Printf("Received: %s\n", string(buf[:n]))
+			// 	logger.Printf("Received: %s\n", string(buf[:n]))
 
-				_, err = c.Write([]byte("ACK\n"))
-				if err != nil {
-					logger.Printf("Error writing to connection: %v\n", err)
-				}
-			}(conn)
+			// 	_, err = c.Write([]byte("ACK\n"))
+			// 	if err != nil {
+			// 		logger.Printf("Error writing to connection: %v\n", err)
+			// 	}
+			// }(conn)
 		}
 	},
 }

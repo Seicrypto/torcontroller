@@ -16,10 +16,12 @@ var pidFile = "/tmp/torcontroller.pid"
 // Initialize Root Command
 func InitCommands() *cobra.Command {
 	rootCmd.AddCommand(
-		versionCmd,
-		startCmd,
-		startBackgroundCmd,
-		stopCmd,
+		VersionCmd,
+		StartCmd,
+		StartBackgroundCmd,
+		StopCmd,
+		StatusCmd,
+		SwitchCmd,
 	)
 	return rootCmd
 }
