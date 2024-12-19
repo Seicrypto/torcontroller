@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net"
 	"os"
 
@@ -15,11 +16,11 @@ var StartBackgroundCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := logger.GetLogger()
-		logger.Printf("Listener started successfully at %s.\n", socketPath)
+		logger.Info(fmt.Sprintf("Listener started successfully at %s.\n", socketPath))
 		os.Remove(socketPath)
 		listener, err := net.Listen("unix", socketPath)
 		if err != nil {
-			logger.Fatal(err)
+			logger.Error(err.Error())
 			return
 		}
 		defer func() {
@@ -30,31 +31,15 @@ var StartBackgroundCmd = &cobra.Command{
 
 		// Loop for accepting connections
 		for {
-			logger.Println("Waiting for connection...")
+			logger.Info("Waiting for connection...")
 			conn, err := listener.Accept()
 			if err != nil {
-				logger.Printf("Error accepting connection: %v\n", err)
+				logger.Warn(fmt.Sprintf("Error accepting connection: %v\n", err))
 				continue
 			}
-			logger.Println("Connection established")
+			logger.Info("Connection established")
 
 			go controller.HandleConnection(conn, socketPath, listener)
-			// go func(c net.Conn) {
-			// 	defer c.Close()
-			// 	buf := make([]byte, 1024)
-			// 	n, err := c.Read(buf)
-			// 	if err != nil {
-			// 		logger.Printf("Error reading from connection: %v\n", err)
-			// 		return
-			// 	}
-
-			// 	logger.Printf("Received: %s\n", string(buf[:n]))
-
-			// 	_, err = c.Write([]byte("ACK\n"))
-			// 	if err != nil {
-			// 		logger.Printf("Error writing to connection: %v\n", err)
-			// 	}
-			// }(conn)
 		}
 	},
 }

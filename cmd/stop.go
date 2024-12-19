@@ -41,7 +41,7 @@ var StopCmd = &cobra.Command{
 		os.Remove(socketPath)
 		os.Remove(pidFile)
 		logger := logger.GetLogger()
-		logger.Printf("Torcontroller listener at %s stopped successfully.\n", socketPath)
+		logger.Info(fmt.Sprintf("Torcontroller listener at %s stopped successfully.\n", socketPath))
 		fmt.Printf("Torcontroller listener at %s stopped successfully.\n", socketPath)
 	},
 }
