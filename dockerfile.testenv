@@ -13,4 +13,5 @@ RUN apt install -y curl\
     systemctl\
     iproute2\
     net-tools\
-    git
+    git\
+    sudo
