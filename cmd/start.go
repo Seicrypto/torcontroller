@@ -72,7 +72,7 @@ var StartCmd = &cobra.Command{
 			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
 		}
 
-		response, err := handler.SendCommand("start")
+		response, err := handler.SendCommandAndGetResponse("start")
 		if err != nil {
 			fmt.Printf("Error sending command: %v\n", err)
 			return

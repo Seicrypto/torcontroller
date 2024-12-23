@@ -26,7 +26,7 @@ func TestSwitchCmd(t *testing.T) {
 		Adapter: &MockAdapter{Client: client, Server: server},
 	}
 
-	response, err := handler.SendCommand("switch")
+	response, err := handler.SendCommandAndGetResponse("switch")
 	if err != nil {
 		t.Fatalf("Execution failed: %v", err)
 	}

@@ -24,7 +24,7 @@ func TestStatusCmd(t *testing.T) {
 		Adapter: &MockAdapter{Client: client, Server: server},
 	}
 
-	response, err := handler.SendCommand("status")
+	response, err := handler.SendCommandAndGetResponse("status")
 	if err != nil {
 		t.Fatalf("Execution failed: %v", err)
 	}

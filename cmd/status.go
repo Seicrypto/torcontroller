@@ -14,7 +14,7 @@ var StatusCmd = &cobra.Command{
 			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
 		}
 
-		response, err := handler.SendCommand("status")
+		response, err := handler.SendCommandAndGetResponse("status")
 		if err != nil {
 			fmt.Printf("Error executing command: %v\n", err)
 			return

@@ -14,7 +14,7 @@ var SwitchCmd = &cobra.Command{
 			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
 		}
 
-		response, err := handler.SendCommand("switch")
+		response, err := handler.SendCommandAndGetResponse("switch")
 		if err != nil {
 			fmt.Printf("Error executing command: %v\n", err)
 			return

@@ -24,7 +24,7 @@ type SocketInteractionHandler struct {
 	Adapter ConnectionAdapter
 }
 
-func (socket *SocketInteractionHandler) SendCommand(command string) (string, error) {
+func (socket *SocketInteractionHandler) SendCommandAndGetResponse(command string) (string, error) {
 	conn, err := socket.Adapter.Dial()
 	if err != nil {
 		return "", fmt.Errorf("failed to connect: %v", err)
