@@ -34,6 +34,20 @@ var commandHandlers = map[string]CommandHandler{
 		conn.Write([]byte("Successfully switched Tor IP.\n"))
 		return nil
 	},
+	"stop": func(conn net.Conn, socketPath string) error {
+		logger := logger.GetLogger()
+		if err := tor.StopTorService(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to stop Tor service: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err))) // 告知客戶端錯誤
+			return err
+		}
+		if _, err := conn.Write([]byte("done\n")); err != nil {
+			logger.Error(fmt.Sprintf("Failed to send final response: %v", err))
+			return err
+		}
+		logger.Info("Tor service stopped successfully")
+		return nil
+	},
 }
 
 func HandleConnection(conn net.Conn, socketPath string, listener net.Listener) error {
