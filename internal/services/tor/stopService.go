@@ -33,7 +33,7 @@ func StopTorService() error {
 	}
 
 	var statusOut, statusErr bytes.Buffer
-	statusCmd := exec.Command("sudo", "systemctl", "status", "tor")
+	statusCmd := exec.Command("sudo", "systemctl", "status", "tor", "--no-pager")
 	statusCmd.Stdout = &statusOut
 	statusCmd.Stderr = &statusErr
 	statusCmd.Env = append(os.Environ(), "LANG=C", "LC_ALL=C")
@@ -45,7 +45,7 @@ func StopTorService() error {
 			return nil
 		}
 		logger.Error(fmt.Sprintf("failed to recheck tor service status: %v", err))
-		logger.Error(fmt.Sprintf("stderr: %s", statusErr.String()))
+		// logger.Error(fmt.Sprintf("stderr: %s", statusErr.String()))
 		return fmt.Errorf("failed to recheck tor service status: %w", err)
 	}
 

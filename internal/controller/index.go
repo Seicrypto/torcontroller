@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/services/privoxy"
 	"github.com/Seicrypto/torcontroller/internal/services/tor"
 )
 
@@ -15,15 +16,22 @@ type CommandHandler func(net.Conn, string) error
 
 var commandHandlers = map[string]CommandHandler{
 	"start": func(conn net.Conn, socketPath string) error {
-		if _, err := conn.Write([]byte("Starting Tor service...\n")); err != nil {
-			return err
-		}
+		logger := logger.GetLogger()
 		if err := tor.StartTorService(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to start Tor service: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
-		if _, err := conn.Write([]byte("Tor service started successfully.\n")); err != nil {
+		if err := privoxy.StartPrivoxyService(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to start Privoxy service: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
+		if _, err := conn.Write([]byte("done\n")); err != nil {
+			logger.Error(fmt.Sprintf("Failed to send final response: %v", err))
+			return err
+		}
+		logger.Info("Tor service started successfully.\n")
 		return nil
 	},
 	"status": func(conn net.Conn, socketPath string) error {
@@ -36,9 +44,14 @@ var commandHandlers = map[string]CommandHandler{
 	},
 	"stop": func(conn net.Conn, socketPath string) error {
 		logger := logger.GetLogger()
+		if err := privoxy.StopPrivoxyService(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to stop Privoxy service: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
 		if err := tor.StopTorService(); err != nil {
 			logger.Error(fmt.Sprintf("Failed to stop Tor service: %v", err))
-			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err))) // 告知客戶端錯誤
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
 		if _, err := conn.Write([]byte("done\n")); err != nil {
