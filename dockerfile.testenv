@@ -15,5 +15,4 @@ RUN apt install -y curl\
     net-tools\
     git\
     iptables\
-    ip6tables\
     sudo
