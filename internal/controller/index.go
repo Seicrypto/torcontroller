@@ -7,6 +7,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/Seicrypto/torcontroller/internal/services/iptable"
 	"github.com/Seicrypto/torcontroller/internal/services/logger"
 	"github.com/Seicrypto/torcontroller/internal/services/privoxy"
 	"github.com/Seicrypto/torcontroller/internal/services/tor"
@@ -27,6 +28,11 @@ var commandHandlers = map[string]CommandHandler{
 			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
+		if err := iptable.ApplyIptablesRules(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to apply iptables rules: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
 		if _, err := conn.Write([]byte("done\n")); err != nil {
 			logger.Error(fmt.Sprintf("Failed to send final response: %v", err))
 			return err
@@ -44,6 +50,11 @@ var commandHandlers = map[string]CommandHandler{
 	},
 	"stop": func(conn net.Conn, socketPath string) error {
 		logger := logger.GetLogger()
+		if err := iptable.ClearIptablesRules(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to clear iptables rules: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
 		if err := privoxy.StopPrivoxyService(); err != nil {
 			logger.Error(fmt.Sprintf("Failed to stop Privoxy service: %v", err))
 			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
