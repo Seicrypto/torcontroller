@@ -17,11 +17,15 @@ var pidFile = "/tmp/torcontroller.pid"
 func InitCommands() *cobra.Command {
 	rootCmd.AddCommand(
 		VersionCmd,
+		CheckCmd,
 		StartCmd,
 		StartBackgroundCmd,
 		StopCmd,
 		StatusCmd,
 		SwitchCmd,
 	)
+
+	CheckCmd.Flags().BoolVarP(&fixFlag, "fix", "f", false, "Fix missing or incorrect results")
+
 	return rootCmd
 }
