@@ -10,6 +10,7 @@ RUN apt install -y curl\
     tor\
     privoxy\
     procps\
+    systemd\
     systemctl\
     iproute2\
     net-tools\
