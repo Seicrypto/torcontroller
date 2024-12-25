@@ -7,36 +7,25 @@ import (
 )
 
 // verifyTorService checks the validity of the Tor service unit file.
-func verifyTorService() bool {
-	return VerifyService("/etc/systemd/system/tor.service")
+func checkTorService() bool {
+	return CheckServiceFile("tor")
 }
 
 // verifyPrivoxyService checks the validity of the Privoxy service unit file.
-func verifyPrivoxyService() bool {
-	return VerifyService("/etc/systemd/system/privoxy.service")
+func checkPrivoxyService() bool {
+	return CheckServiceFile("privoxy")
 }
 
 // verifyService is a helper function to validate a given service unit file.
-func VerifyService(servicePath string) bool {
-	var out, errBuf bytes.Buffer
-
-	// Execute `systemd-analyze verify` command.
-	cmd := exec.Command("sudo", "systemd-analyze", "verify", servicePath)
+func CheckServiceFile(serviceName string) bool {
+	cmd := exec.Command("sudo", "systemctl", "show", serviceName)
+	var out bytes.Buffer
 	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
 
-	err := cmd.Run()
-
-	// Log the result and handle errors.
-	if err != nil {
-		fmt.Printf("Verification failed for %s\nError: %v\nDetails: %s\n", servicePath, err, errBuf.String())
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("[ERROR] Failed to show service %s configuration: %v", serviceName, err)
 		return false
 	}
-
-	if out.Len() > 0 {
-		fmt.Printf("Verification output for %s: %s\n", servicePath, out.String())
-	}
-
-	// fmt.Printf("Service %s is valid.\n", servicePath)
+	fmt.Printf("[INFO] Service %s configuration:\n%s", serviceName, out.String())
 	return true
 }
