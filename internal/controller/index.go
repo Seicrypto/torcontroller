@@ -61,7 +61,16 @@ var commandHandlers = map[string]CommandHandler{
 		return err
 	},
 	"switch": func(conn net.Conn, socketPath string) error {
-		conn.Write([]byte("Successfully switched Tor IP.\n"))
+		logger := logger.GetLogger()
+		if err := tor.SwitchTorCircuit(); err != nil {
+			logger.Error(fmt.Sprintf("Failed to switch Tor Circuit: %v", err))
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
+		if _, err := conn.Write([]byte("done\n")); err != nil {
+			logger.Error(fmt.Sprintf("Failed to send final response: %v", err))
+			return err
+		}
 		return nil
 	},
 	"stop": func(conn net.Conn, socketPath string) error {
