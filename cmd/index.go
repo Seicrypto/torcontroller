@@ -20,9 +20,11 @@ func InitCommands() *cobra.Command {
 		CheckCmd,
 		StartCmd,
 		StartBackgroundCmd,
-		StopCmd,
+		TrafficCmd,
 		StatusCmd,
 		SwitchCmd,
+		StopCmd,
+		NewPasswordCmd,
 	)
 
 	CheckCmd.Flags().BoolVarP(&fixFlag, "fix", "f", false, "Fix missing or incorrect results")

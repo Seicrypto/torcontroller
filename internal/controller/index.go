@@ -40,6 +40,22 @@ var commandHandlers = map[string]CommandHandler{
 		logger.Info("Tor service started successfully.\n")
 		return nil
 	},
+	"traffic": func(conn net.Conn, socketPath string) error {
+		logger := logger.GetLogger()
+		readTraffic, writtenTraffic, err := tor.GetTorTrafficMetrics()
+		if err != nil {
+			logger.Error(fmt.Sprintf("Error fetching traffic metrics: %v\n", err))
+			fmt.Fprintf(conn, "Error: %v\n", err)
+			return err
+		}
+		response := fmt.Sprintf("Traffic Read: %s bytes, Traffic Written: %s bytes\n", readTraffic, writtenTraffic)
+		if _, err := conn.Write([]byte(response)); err != nil {
+			logger.Error(fmt.Sprintf("Failed to send traffic response: %v", err))
+			return err
+		}
+		logger.Info("Get traffic successfully")
+		return nil
+	},
 	"status": func(conn net.Conn, socketPath string) error {
 		_, err := conn.Write([]byte(fmt.Sprintf("Listener at %s is running.\n", socketPath)))
 		return err
