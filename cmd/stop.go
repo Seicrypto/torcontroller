@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -14,8 +13,6 @@ var StopCmd = &cobra.Command{
 	Short: "Stop a Torcontroller listener",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := logger.GetLogger()
-
 		// Send the "stop" command to the listener via the socket
 		handler := &SocketInteractionHandler{
 			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
@@ -23,18 +20,18 @@ var StopCmd = &cobra.Command{
 
 		response, err := handler.SendCommandAndGetResponse("stop")
 		if err != nil {
-			logger.Error(fmt.Sprintf("Error sending command: %v", err))
+			log.Error(fmt.Sprintf("Error sending command: %v", err))
 			fmt.Printf("Error sending command: %v\n", err)
 			return
 		}
 
 		if response != "done\n" {
-			logger.Warn(fmt.Sprintf("Unexpected response from server: %s", response))
+			log.Warn(fmt.Sprintf("Unexpected response from server: %s", response))
 			fmt.Printf("Unexpected response from server: %s\n", response)
 			return
 		}
 
-		logger.Info("Server confirmed successful stop.")
+		log.Info("Server confirmed successful stop.")
 		fmt.Println("Server confirmed successful stop.")
 
 		// Read the PID file
@@ -64,7 +61,7 @@ var StopCmd = &cobra.Command{
 
 		os.Remove(socketPath)
 		os.Remove(pidFile)
-		logger.Info(fmt.Sprintf("Torcontroller listener at %s stopped successfully.\n", socketPath))
+		log.Info(fmt.Sprintf("Torcontroller listener at %s stopped successfully.\n", socketPath))
 		fmt.Printf("Torcontroller listener at %s stopped successfully.\n", socketPath)
 	},
 }
