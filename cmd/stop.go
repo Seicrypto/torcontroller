@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
 )
 

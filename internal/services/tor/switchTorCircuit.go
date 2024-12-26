@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 )
 
 // SwitchTorCircuit authenticates and switches Tor nodes using control.authcookie

@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 )
 
 func StartTorService() error {

@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 )
 
 // StopTorService stops the Tor service using systemctl

@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/Seicrypto/torcontroller/internal/services/iptable"
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
 	"github.com/Seicrypto/torcontroller/internal/services/privoxy"
 	"github.com/Seicrypto/torcontroller/internal/services/tor"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 )
 
 type CommandHandler func(net.Conn, string) error

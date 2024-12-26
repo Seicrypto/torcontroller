@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/Seicrypto/torcontroller/internal/controller"
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
 )
 

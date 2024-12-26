@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Seicrypto/torcontroller/internal/services/logger"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 )
 
 func GetTorTrafficMetrics() (string, string, error) {
