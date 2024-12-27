@@ -7,13 +7,15 @@ import (
 	"net"
 	"os/exec"
 
+	"github.com/Seicrypto/torcontroller/internal/singleton/configuration"
 	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 )
 
 type CommandHandler struct {
 	Logger        *log.Logger
-	Socket        ConnectionAdapter // abstract socket interface
-	CommandRunner CommandRunner     // CLI runner interface
+	Socket        ConnectionAdapter            // abstract socket interface
+	CommandRunner CommandRunner                // CLI runner interface
+	Config        *configuration.Configuration // Injected configuration
 }
 
 // ConnectionAdapter for abstract socket behavior
@@ -49,13 +51,17 @@ func (r *RealCommandRunner) Run(name string, args ...string) (string, error) {
 	return out.String(), nil
 }
 
-func NewCommandHandler(socket ConnectionAdapter, runner CommandRunner, loggerAdapter *log.Logger) *CommandHandler {
-	if loggerAdapter == nil {
-		loggerAdapter = logger.GetLogger().Logger // Default to the global logger
+func NewCommandHandler(socket ConnectionAdapter, runner CommandRunner, log *log.Logger, cfg *configuration.Configuration) *CommandHandler {
+	if log == nil {
+		log = logger.GetLogger().Logger
+	}
+	if cfg == nil {
+		cfg = configuration.GetConfig() // Default to singleton if not provided
 	}
 	return &CommandHandler{
-		Logger:        loggerAdapter,
+		Logger:        log,
 		Socket:        socket,
 		CommandRunner: runner,
+		Config:        cfg,
 	}
 }
