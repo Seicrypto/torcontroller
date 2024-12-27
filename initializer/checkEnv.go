@@ -1,85 +1,81 @@
 package initializer
 
 import (
+	"embed"
 	"fmt"
 
 	"github.com/Seicrypto/torcontroller/internal/controller"
 )
 
+//go:embed templates/*
+var templates embed.FS
+
+// CheckEnvironment validates and fixes the environment based on configuration.
 func CheckEnvironment(fix bool) {
 	fmt.Println("Environment Check Report:")
 
+	// Initialize the Initializer with embedded templates and a real command runner
+
+	runner := &controller.RealCommandRunner{}
+	initializer := NewInitializer(templates, runner)
+
 	// Sudoer File Check
-	if sudoersFileVerify() {
+	if initializer.SudoersFileVerify() {
 		fmt.Println("- Sudoers File [OK]")
 	} else {
 		fmt.Println("- Sudoers File [MISSING]")
 		if fix {
 			fmt.Println("  -> Attempting to place Sudoers File...")
-
-			runner := &controller.RealCommandRunner{}
-			PlaceSudoersFile(runner)
+			if err := initializer.PlaceSudoersFile(); err != nil {
+				fmt.Printf("  [ERROR] Failed to place Sudoers File: %v\n", err)
+			} else {
+				fmt.Println("  [INFO] Sudoers File placed successfully.")
+			}
 		}
 	}
 
 	// Tor Service File Check
-	if checkTorService() {
+	if initializer.CheckTorService() {
 		fmt.Println("- Tor Service [OK]")
 	} else {
 		fmt.Println("- Tor Service [MISSING]")
 		if fix {
 			fmt.Println("  -> Attempting to place Tor Service...")
-
-			runner := &controller.RealCommandRunner{}
-			PlaceTorServiceFile(runner)
+			if err := initializer.PlaceTorServiceFile(); err != nil {
+				fmt.Printf("  [ERROR] Failed to place Tor Service: %v\n", err)
+			} else {
+				fmt.Println("  [INFO] Tor Service placed successfully.")
+			}
 		}
 	}
 
 	// Privoxy Service File Check
-	if checkPrivoxyService() {
+	if initializer.CheckPrivoxyService() {
 		fmt.Println("- Privoxy Service [OK]")
 	} else {
 		fmt.Println("- Privoxy Service [MISSING]")
 		if fix {
 			fmt.Println("  -> Attempting to place Privoxy Service...")
-
-			runner := &controller.RealCommandRunner{}
-			PlacePrivoxyServiceFile(runner)
+			if err := initializer.PlacePrivoxyServiceFile(); err != nil {
+				fmt.Printf("  [ERROR] Failed to place Privoxy Service: %v\n", err)
+			} else {
+				fmt.Println("  [INFO] Privoxy Service placed successfully.")
+			}
 		}
 	}
 
 	// Torrc File Check
-	if verifyTorrcConfig() {
+	if initializer.VerifyTorrcConfig() {
 		fmt.Println("- Torrc config [OK]")
 	} else {
+		fmt.Println("- Torrc config [MISSING]")
 		if fix {
-			fmt.Println("  -> Attempting to place Tor configuration...")
-
-			runner := &controller.RealCommandRunner{}
-			PlaceTorrcConfig(runner)
+			fmt.Println("  -> Attempting to place Torrc configuration...")
+			if err := initializer.PlaceTorrcConfig(); err != nil {
+				fmt.Printf("  [ERROR] Failed to place Torrc configuration: %v\n", err)
+			} else {
+				fmt.Println("  [INFO] Torrc configuration placed successfully.")
+			}
 		}
 	}
-
-	// Privoxy Config Check
-
-	// Iptables Configuration Check
-	// if isIptablesConfigured() {
-	// 	fmt.Println("- Iptables Config [OK]")
-	// } else {
-	// 	fmt.Println("- Iptables Config [MISSING]")
-	// 	if fix {
-	// 		fmt.Println("  -> Attempting to configure Iptables...")
-	// 		configureIptables()
-	// 	}
-	// }
-
-	// IPv6 Support Check
-	// if isIPv6Enabled() {
-	// 	fmt.Println("- IPv6 Support [ENABLED]")
-	// } else {
-	// 	fmt.Println("- IPv6 Support [DISABLED]")
-	// 	if fix {
-	// 		fmt.Println("  -> IPv6 support must be manually enabled.")
-	// 	}
-	// }
 }

@@ -1,45 +1,35 @@
 package initializer
 
 import (
-	"bytes"
 	"fmt"
-	"os/exec"
 	"strings"
 )
 
-// verifyTorService checks the validity of the Tor service unit file.
-func checkTorService() bool {
-	return CheckServiceFile("tor")
+// CheckTorService checks the validity of the Tor service unit file.
+func (i *Initializer) CheckTorService() bool {
+	return i.CheckServiceFile("tor")
 }
 
-// verifyPrivoxyService checks the validity of the Privoxy service unit file.
-func checkPrivoxyService() bool {
-	return CheckServiceFile("privoxy")
+// CheckPrivoxyService checks the validity of the Privoxy service unit file.
+func (i *Initializer) CheckPrivoxyService() bool {
+	return i.CheckServiceFile("privoxy")
 }
 
-// verifyService is a helper function to validate a given service unit file.
-func CheckServiceFile(serviceName string) bool {
-	cmd := exec.Command("sudo", "systemctl", "show", serviceName)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-
-	if err := cmd.Run(); err != nil {
+// CheckServiceFile validates the given service's systemd unit file.
+func (i *Initializer) CheckServiceFile(serviceName string) bool {
+	cmd := []string{"sudo", "systemctl", "show", serviceName}
+	output, err := i.CommandRunner.Run(cmd[0], cmd[1:]...)
+	if err != nil {
 		fmt.Printf("[ERROR] Failed to validate service %s: %v\n", serviceName, err)
 		return false
 	}
 
 	// Parse the output to check for critical fields
-	output := out.String()
-	// if !strings.Contains(output, "ActiveState=active") {
-	// 	fmt.Printf("[ERROR] Service %s is not active.\n", serviceName)
-	// 	return false
-	// }
-
 	if !strings.Contains(output, "LoadState=loaded") {
 		fmt.Printf("[ERROR] Service %s is not loaded properly.\n", serviceName)
 		return false
 	}
 
-	// If necessary, add more checks for specific fields in the service configuration
+	// Additional checks can be added here if needed
 	return true
 }
