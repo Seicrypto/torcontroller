@@ -71,10 +71,53 @@ func (h *CommandHandler) SwitchTorCircuit() error {
 
 		if line == "250 OK" {
 			h.Logger.Println("[INFO] Tor circuit switched successfully.")
-			return nil
+			break
 		} else if strings.HasPrefix(line, "5") { // Error Code
 			h.Logger.Printf("[ERROR] SIGNAL NEWNYM failed: %s", line)
 			return fmt.Errorf("SIGNAL NEWNYM failed: %s", line)
+		}
+	}
+
+	// Perform traffic checks and switch circuit if necessary
+	for {
+		readTraffic, writtenTraffic, err := h.GetTorTrafficMetrics()
+		if err != nil {
+			h.Logger.Printf("[ERROR] Failed to retrieve traffic metrics: %v", err)
+			return fmt.Errorf("failed to retrieve traffic metrics: %v", err)
+		}
+
+		h.Logger.Printf("[INFO] Current Traffic - Read: %d bytes, Written: %d bytes", readTraffic, writtenTraffic)
+
+		if (h.Config.RateLimit.MinReadRate > 0 && readTraffic < h.Config.RateLimit.MinReadRate) ||
+			(h.Config.RateLimit.MinWriteRate > 0 && writtenTraffic < h.Config.RateLimit.MinWriteRate) {
+			h.Logger.Println("[INFO] Traffic below threshold, sending SIGNAL NEWNYM...")
+			_, err = conn.Write([]byte("SIGNAL NEWNYM\r\n"))
+			if err != nil {
+				h.Logger.Printf("[ERROR] Failed to send SIGNAL NEWNYM command: %v", err)
+				return fmt.Errorf("failed to send SIGNAL NEWNYM command: %v", err)
+			}
+
+			for {
+				line, err := reader.ReadString('\n')
+				if err != nil {
+					h.Logger.Printf("[ERROR] Failed to read SIGNAL NEWNYM response: %v", err)
+					return fmt.Errorf("failed to read SIGNAL NEWNYM response: %v", err)
+				}
+				line = strings.TrimSpace(line)
+				h.Logger.Printf("[DEBUG] SIGNAL NEWNYM response: %s", line)
+
+				if line == "250 OK" {
+					h.Logger.Println("[INFO] Tor circuit switched successfully.")
+					return nil
+				} else if strings.HasPrefix(line, "5") { // Error Code
+					h.Logger.Printf("[ERROR] SIGNAL NEWNYM failed: %s", line)
+					return fmt.Errorf("SIGNAL NEWNYM failed: %s", line)
+				}
+			}
+		} else {
+			// Traffic metrics are above threshold, no need to switch circuit
+			h.Logger.Println("[INFO] Traffic metrics are within acceptable limits, no need to switch circuit.")
+			return nil
 		}
 	}
 }

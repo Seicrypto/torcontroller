@@ -15,8 +15,8 @@ type Configuration struct {
 
 // RateLimitConfig represents rate limit settings.
 type RateLimitConfig struct {
-	MinReadRate  int `yaml:"min_read_rate"`
-	MinWriteRate int `yaml:"min_write_rate"`
+	MinReadRate  uint `yaml:"min_read_rate"`
+	MinWriteRate uint `yaml:"min_write_rate"`
 }
 
 var (
@@ -31,11 +31,12 @@ func GetConfig() *Configuration {
 
 // LoadConfig reads and parses the configuration file.
 func LoadConfig(configPath string) error {
-	var err error
+	var loadErr error // Local variable for error tracking
+
 	once.Do(func() {
 		file, err := os.Open(configPath)
 		if err != nil {
-			err = fmt.Errorf("failed to open configuration file: %v", err)
+			loadErr = fmt.Errorf("failed to open configuration file: %v", err)
 			return
 		}
 		defer file.Close()
@@ -43,12 +44,12 @@ func LoadConfig(configPath string) error {
 		config := &Configuration{}
 		decoder := yaml.NewDecoder(file)
 		if err = decoder.Decode(config); err != nil {
-			err = fmt.Errorf("failed to parse configuration file: %v", err)
+			loadErr = fmt.Errorf("failed to parse configuration file: %v", err)
 			return
 		}
 
 		instance = config
 	})
 
-	return err
+	return loadErr
 }
