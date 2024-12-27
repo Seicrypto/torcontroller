@@ -3,11 +3,11 @@ package initializer
 import (
 	"fmt"
 
-	runneradapter "github.com/Seicrypto/torcontroller/internal/services/runnerAdapter"
+	"github.com/Seicrypto/torcontroller/internal/controller"
 )
 
 func verifyTorrcConfig() bool {
-	runner := &runneradapter.RealCommandRunner{}
+	runner := &controller.RealCommandRunner{}
 	cmd := []string{"sudo", "tor", "--verify-config"}
 	if _, err := runner.Run(cmd[0], cmd[1:]...); err != nil {
 		fmt.Printf("- Torrc config validation failed: %v\n", err)

@@ -13,7 +13,7 @@ var (
 )
 
 type Logger struct {
-	logger *log.Logger
+	Logger *log.Logger
 }
 
 func GetLogger() *Logger {
@@ -24,22 +24,22 @@ func GetLogger() *Logger {
 		}
 
 		baseLogger := log.New(logFile, "TORCONTROLLER: ", log.Ldate|log.Ltime|log.Lshortfile)
-		instance = &Logger{logger: baseLogger}
+		instance = &Logger{Logger: baseLogger}
 	})
 	return instance
 }
 
 // Info logs for recording information levels
 func (l *Logger) Info(message string) {
-	l.logger.Printf("[INFO] %s", message)
+	l.Logger.Printf("[INFO] %s", message)
 }
 
 // Warn logs for recording information levels
 func (l *Logger) Warn(message string) {
-	l.logger.Printf("[WARN] %s", message)
+	l.Logger.Printf("[WARN] %s", message)
 }
 
 // Error log of error levels
 func (l *Logger) Error(message string) {
-	l.logger.Printf("[ERROR] %s", message)
+	l.Logger.Printf("[ERROR] %s", message)
 }

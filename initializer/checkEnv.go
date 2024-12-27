@@ -3,7 +3,7 @@ package initializer
 import (
 	"fmt"
 
-	runneradapter "github.com/Seicrypto/torcontroller/internal/services/runnerAdapter"
+	"github.com/Seicrypto/torcontroller/internal/controller"
 )
 
 func CheckEnvironment(fix bool) {
@@ -17,7 +17,7 @@ func CheckEnvironment(fix bool) {
 		if fix {
 			fmt.Println("  -> Attempting to place Sudoers File...")
 
-			runner := &runneradapter.RealCommandRunner{}
+			runner := &controller.RealCommandRunner{}
 			PlaceSudoersFile(runner)
 		}
 	}
@@ -30,7 +30,7 @@ func CheckEnvironment(fix bool) {
 		if fix {
 			fmt.Println("  -> Attempting to place Tor Service...")
 
-			runner := &runneradapter.RealCommandRunner{}
+			runner := &controller.RealCommandRunner{}
 			PlaceTorServiceFile(runner)
 		}
 	}
@@ -43,7 +43,7 @@ func CheckEnvironment(fix bool) {
 		if fix {
 			fmt.Println("  -> Attempting to place Privoxy Service...")
 
-			runner := &runneradapter.RealCommandRunner{}
+			runner := &controller.RealCommandRunner{}
 			PlacePrivoxyServiceFile(runner)
 		}
 	}
@@ -55,7 +55,7 @@ func CheckEnvironment(fix bool) {
 		if fix {
 			fmt.Println("  -> Attempting to place Tor configuration...")
 
-			runner := &runneradapter.RealCommandRunner{}
+			runner := &controller.RealCommandRunner{}
 			PlaceTorrcConfig(runner)
 		}
 	}

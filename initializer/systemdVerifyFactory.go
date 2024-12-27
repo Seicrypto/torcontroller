@@ -30,10 +30,10 @@ func CheckServiceFile(serviceName string) bool {
 
 	// Parse the output to check for critical fields
 	output := out.String()
-	if !strings.Contains(output, "ActiveState=active") {
-		fmt.Printf("[ERROR] Service %s is not active.\n", serviceName)
-		return false
-	}
+	// if !strings.Contains(output, "ActiveState=active") {
+	// 	fmt.Printf("[ERROR] Service %s is not active.\n", serviceName)
+	// 	return false
+	// }
 
 	if !strings.Contains(output, "LoadState=loaded") {
 		fmt.Printf("[ERROR] Service %s is not loaded properly.\n", serviceName)

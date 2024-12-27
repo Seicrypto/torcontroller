@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	runneradapter "github.com/Seicrypto/torcontroller/internal/services/runnerAdapter"
+	"github.com/Seicrypto/torcontroller/internal/controller"
 )
 
 //go:embed templates/*
 var templates embed.FS
 
-func PlaceTorServiceFile(runner runneradapter.CommandRunner) error {
+func PlaceTorServiceFile(runner controller.CommandRunner) error {
 	content, err := templates.ReadFile("templates/tor.service")
 	if err != nil {
 		return fmt.Errorf("failed to read tor service template: %w", err)
@@ -19,7 +19,7 @@ func PlaceTorServiceFile(runner runneradapter.CommandRunner) error {
 	return writeServiceFile("/etc/systemd/system/tor.service", content, runner)
 }
 
-func PlacePrivoxyServiceFile(runner runneradapter.CommandRunner) error {
+func PlacePrivoxyServiceFile(runner controller.CommandRunner) error {
 	content, err := templates.ReadFile("templates/privoxy.service")
 	if err != nil {
 		return fmt.Errorf("failed to read privoxy service template: %w", err)
@@ -27,7 +27,7 @@ func PlacePrivoxyServiceFile(runner runneradapter.CommandRunner) error {
 	return writeServiceFile("/etc/systemd/system/privoxy.service", content, runner)
 }
 
-func writeServiceFile(path string, content []byte, runner runneradapter.CommandRunner) error {
+func writeServiceFile(path string, content []byte, runner controller.CommandRunner) error {
 	tmpFile := "/tmp/service.tmp"
 	if err := os.WriteFile(tmpFile, content, 0644); err != nil {
 		return fmt.Errorf("failed to write temp file: %w", err)
@@ -40,7 +40,7 @@ func writeServiceFile(path string, content []byte, runner runneradapter.CommandR
 	return nil
 }
 
-func PlaceSudoersFile(runner runneradapter.CommandRunner) error {
+func PlaceSudoersFile(runner controller.CommandRunner) error {
 	sudoersPath := "/etc/sudoers.d/torcontroller"
 
 	content, err := templates.ReadFile("templates/sudoers.d/torcontroller")
@@ -76,7 +76,7 @@ func PlaceSudoersFile(runner runneradapter.CommandRunner) error {
 }
 
 // PlaceTorrcConfig places the torrc configuration file at the expected location
-func PlaceTorrcConfig(runner runneradapter.CommandRunner) error {
+func PlaceTorrcConfig(runner controller.CommandRunner) error {
 	const torrcPath = "/etc/tor/torrc"
 
 	// Load the template file
@@ -116,7 +116,7 @@ func PlaceTorrcConfig(runner runneradapter.CommandRunner) error {
 }
 
 // PlacePrivoxyConfig places the privoxy configuration file at the expected location
-func PlacePrivoxyConfig(runner runneradapter.CommandRunner) error {
+func PlacePrivoxyConfig(runner controller.CommandRunner) error {
 	const privoxyConfigPath = "/etc/privoxy/config"
 
 	// Load the template file

@@ -5,11 +5,11 @@ import (
 	"os"
 	"syscall"
 
-	runneradapter "github.com/Seicrypto/torcontroller/internal/services/runnerAdapter"
+	"github.com/Seicrypto/torcontroller/internal/controller"
 )
 
 func sudoersFileVerify() bool {
-	runner := &runneradapter.RealCommandRunner{}
+	runner := &controller.RealCommandRunner{}
 	sudoersPath := "/etc/sudoers.d/torcontroller"
 
 	if _, err := os.Stat(sudoersPath); os.IsNotExist(err) {
