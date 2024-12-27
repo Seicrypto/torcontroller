@@ -3,6 +3,7 @@ package initializer
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 // PlaceTorServiceFile places the Tor service systemd file.
@@ -139,5 +140,46 @@ func (i *Initializer) PlacePrivoxyConfig() error {
 		return fmt.Errorf("failed to set permissions for privoxy config file: %w", err)
 	}
 
+	return nil
+}
+
+// PlaceTorcontrollerYamlFile places the Torcontroller configuration file in the specified location.
+func (i *Initializer) PlaceTorcontrollerYamlFile(path string) error {
+	// Ensure the parent directory exists
+	dir := filepath.Dir(path)
+	if _, err := i.FileSystem.Stat(dir); os.IsNotExist(err) {
+		if err := i.FileSystem.MkdirAll(dir, 0755); err != nil {
+			return fmt.Errorf("failed to create parent directory %s: %w", dir, err)
+		}
+	}
+
+	content, err := i.Templates.ReadFile("templates/torcontroller.yml")
+	if err != nil {
+		return fmt.Errorf("failed to read torcontroller.yml template: %w", err)
+	}
+	tmpFile, err := os.CreateTemp("", "torcontroller-yaml-*.tmp")
+	if err != nil {
+		return fmt.Errorf("failed to create temporary configuration file: %w", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	if _, err := tmpFile.Write(content); err != nil {
+		return fmt.Errorf("failed to write configuration template to temporary file: %w", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temporary configuration file: %w", err)
+	}
+
+	cmd := []string{"sudo", "mv", tmpFile.Name(), path}
+	if _, err := i.CommandRunner.Run(cmd[0], cmd[1:]...); err != nil {
+		return fmt.Errorf("failed to move configuration file: %w", err)
+	}
+
+	cmd = []string{"sudo", "chmod", "600", path}
+	if _, err := i.CommandRunner.Run(cmd[0], cmd[1:]...); err != nil {
+		return fmt.Errorf("failed to set permissions for configuration file: %w", err)
+	}
+
+	fmt.Println("[INFO] Configuration file placed successfully.")
 	return nil
 }

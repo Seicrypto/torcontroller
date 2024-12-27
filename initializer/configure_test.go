@@ -85,3 +85,29 @@ func TestPlacePrivoxyConfig(t *testing.T) {
 		t.Errorf("PlacePrivoxyConfig failed: %v", err)
 	}
 }
+
+// TestPlaceTorcontrollerYamlFile tests the functionality of PlaceTorcontrollerYamlFile.
+func TestPlaceTorcontrollerYamlFile(t *testing.T) {
+	mockFileSystem := &MockFileSystem{
+		Files:       make(map[string]*MockFileInfo),
+		MkdirErrors: make(map[string]error),
+	}
+	mockTemplates := &MockTemplates{
+		Files: map[string][]byte{
+			"templates/torcontroller.yml": []byte("rate_limit:\n  min_read_rate: 20000\n  min_write_rate: 10000"),
+		},
+	}
+
+	mockRunner := &MockCommandRunner{
+		Output: "Success",
+		Error:  nil,
+	}
+
+	init := initializer.NewInitializer(mockTemplates, mockRunner, mockFileSystem)
+
+	// Successfully place the configuration file
+	err := init.PlaceTorcontrollerYamlFile("/etc/torcontroller/torcontroller.yml")
+	if err != nil {
+		t.Errorf("expected no error but got: %v", err)
+	}
+}

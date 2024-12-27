@@ -41,12 +41,22 @@ func (m *MockTemplates) ReadFile(name string) ([]byte, error) {
 
 type FileSystem interface {
 	Stat(name string) (os.FileInfo, error)
+	ReadFile(name string) ([]byte, error)
+	MkdirAll(path string, perm os.FileMode) error
 }
 
 type RealFileSystem struct{}
 
 func (r *RealFileSystem) Stat(name string) (os.FileInfo, error) {
 	return os.Stat(name)
+}
+
+func (r *RealFileSystem) ReadFile(name string) ([]byte, error) {
+	return os.ReadFile(name)
+}
+
+func (r *RealFileSystem) MkdirAll(path string, perm os.FileMode) error {
+	return os.MkdirAll(path, perm)
 }
 
 // Initializer is responsible for system and config validations.

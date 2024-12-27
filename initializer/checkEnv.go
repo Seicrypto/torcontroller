@@ -20,6 +20,22 @@ func CheckEnvironment(fix bool) {
 	templateProvider := &EmbedFSWrapper{FS: templates} // Wrap embed.FS
 	initializer := NewInitializer(templateProvider, runner, fs)
 
+	configurationPath := "/etc/torcontroller/torcontroller.yml"
+	// Configuration toncontroller.yml check
+	if initializer.VerifyConfigFile(configurationPath) {
+		fmt.Println("- Torcontroller Cofiguration File [OK]")
+	} else {
+		fmt.Println("- Torcontroller Cofiguration File [Invalid]")
+		if fix {
+			fmt.Println("  -> Attempting to place Torcontroller Cofiguration File...")
+			if err := initializer.PlaceTorcontrollerYamlFile(configurationPath); err != nil {
+				fmt.Printf("  [ERROR] Failed to place Torcontroller Cofiguration File: %v\n", err)
+			} else {
+				fmt.Println("  [INFO] Torcontroller Cofiguration File placed successfully.")
+			}
+		}
+	}
+
 	// Sudoer File Check
 	if initializer.SudoersFileVerify() {
 		fmt.Println("- Sudoers File [OK]")

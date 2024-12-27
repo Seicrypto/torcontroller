@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/Seicrypto/torcontroller/internal/singleton/configuration"
 	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
 )
@@ -11,8 +14,12 @@ var rootCmd = &cobra.Command{
 	Short: "Tor Controller CLI",
 	Long:  "A CLI to control Tor and Privoxy services.",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// Initialization Log
-		// logger.GetLogger()
+
+		// Initialize configuration
+		configurationPath := "/etc/torcontroller/torcontroller.yml"
+		if err := configuration.LoadConfig(configurationPath); err != nil {
+			return fmt.Errorf("failed to load configuration: %v", err)
+		}
 
 		return nil
 	},

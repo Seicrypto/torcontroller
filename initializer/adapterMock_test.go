@@ -39,9 +39,10 @@ func (m *MockTemplates) ReadFile(name string) ([]byte, error) {
 
 // MockFileInfo is a mock implementation of os.FileInfo for testing.
 type MockFileInfo struct {
-	mode os.FileMode
-	uid  uint32
-	gid  uint32
+	content []byte
+	mode    os.FileMode
+	uid     uint32
+	gid     uint32
 }
 
 func (m *MockFileInfo) Name() string       { return "mockfile" }
@@ -58,8 +59,9 @@ func (m *MockFileInfo) Sys() interface{} {
 
 // MockFileSystem is a mock implementation of FileSystem for testing.
 type MockFileSystem struct {
-	Files map[string]*MockFileInfo
-	Error error
+	Files       map[string]*MockFileInfo
+	Error       error
+	MkdirErrors map[string]error
 }
 
 func (m *MockFileSystem) Stat(name string) (os.FileInfo, error) {
@@ -71,4 +73,21 @@ func (m *MockFileSystem) Stat(name string) (os.FileInfo, error) {
 		return nil, errors.New("file not found")
 	}
 	return info, nil
+}
+
+func (m *MockFileSystem) ReadFile(name string) ([]byte, error) {
+	info, exists := m.Files[name]
+	if !exists {
+		return nil, errors.New("file not found")
+	}
+	return info.content, nil
+}
+
+func (m *MockFileSystem) MkdirAll(path string, perm os.FileMode) error {
+	if err, exists := m.MkdirErrors[path]; exists {
+		return err
+	}
+	// Simulate creating a directory
+	m.Files[path] = &MockFileInfo{mode: perm}
+	return nil
 }
