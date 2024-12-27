@@ -6,12 +6,10 @@ import (
 	"syscall"
 )
 
-// SudoersFileVerify checks the validity of the sudoers file for torcontroller.
 func (i *Initializer) SudoersFileVerify() bool {
 	sudoersPath := "/etc/sudoers.d/torcontroller"
 
-	// Check if the sudoers file exists
-	fileInfo, err := os.Stat(sudoersPath)
+	fileInfo, err := i.FileSystem.Stat(sudoersPath)
 	if os.IsNotExist(err) {
 		fmt.Println("- Sudoers configuration [MISSING]")
 		return false
@@ -20,26 +18,22 @@ func (i *Initializer) SudoersFileVerify() bool {
 		return false
 	}
 
-	// Check file permissions
 	if fileInfo.Mode() != 0o440 {
 		fmt.Println("- Sudoers configuration [INVALID PERMISSIONS]")
 		return false
 	}
 
-	// Check file ownership
 	stat, ok := fileInfo.Sys().(*syscall.Stat_t)
 	if !ok || stat.Uid != 0 || stat.Gid != 0 {
 		fmt.Println("- Sudoers configuration [INVALID OWNER]")
 		return false
 	}
 
-	// Validate sudoers syntax
 	cmd := []string{"sudo", "visudo", "-cf", sudoersPath}
 	if _, err := i.CommandRunner.Run(cmd[0], cmd[1:]...); err != nil {
 		fmt.Println("- Sudoers configuration [INVALID SYNTAX]")
 		return false
 	}
 
-	// All checks passed
 	return true
 }

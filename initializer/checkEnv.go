@@ -15,9 +15,10 @@ func CheckEnvironment(fix bool) {
 	fmt.Println("Environment Check Report:")
 
 	// Initialize the Initializer with embedded templates and a real command runner
-
 	runner := &controller.RealCommandRunner{}
-	initializer := NewInitializer(templates, runner)
+	fs := &RealFileSystem{}
+	templateProvider := &EmbedFSWrapper{FS: templates} // Wrap embed.FS
+	initializer := NewInitializer(templateProvider, runner, fs)
 
 	// Sudoer File Check
 	if initializer.SudoersFileVerify() {
