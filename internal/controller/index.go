@@ -33,16 +33,40 @@ func HandleConnection(conn net.Conn, socketPath string, listener net.Listener) e
 			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
+
 		if err := handler.StartPrivoxyService(); err != nil {
 			handler.Logger.Printf("[ERROR] %v", err)
 			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
+
 		if err := handler.ApplyIptablesIPv4(); err != nil {
 			handler.Logger.Printf("[ERROR] %v", err)
 			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
 			return err
 		}
+
+		// Retrieve traffic metrics
+		readTraffic, writtenTraffic, err := handler.GetTorTrafficMetrics()
+		if err != nil {
+			handler.Logger.Printf("[ERROR] Failed to retrieve traffic metrics: %v", err)
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
+
+		// Check against configuration limits
+		if (handler.Config.RateLimit.MinReadRate > 0 && readTraffic < handler.Config.RateLimit.MinReadRate) ||
+			(handler.Config.RateLimit.MinWriteRate > 0 && writtenTraffic < handler.Config.RateLimit.MinWriteRate) {
+			handler.Logger.Printf("[WARN] Traffic below threshold. Read: %d bytes (limit: %d bytes), Written: %d bytes (limit: %d bytes)",
+				readTraffic, handler.Config.RateLimit.MinReadRate, writtenTraffic, handler.Config.RateLimit.MinWriteRate)
+
+			if err := handler.SwitchTorCircuit(); err != nil {
+				handler.Logger.Printf("[ERROR] Failed to switch Tor circuit: %v", err)
+				_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+				return err
+			}
+		}
+
 		_, _ = conn.Write([]byte("Done\n"))
 		handler.Logger.Println("[INFO] Tor service started successfully.")
 		return nil
