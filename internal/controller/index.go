@@ -46,6 +46,12 @@ func HandleConnection(conn net.Conn, socketPath string, listener net.Listener) e
 			return err
 		}
 
+		if err := handler.ApplyIptablesIPv6Reject(); err != nil {
+			handler.Logger.Printf("[ERROR] %v", err)
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
+
 		// Retrieve traffic metrics
 		readTraffic, writtenTraffic, err := handler.GetTorTrafficMetrics()
 		if err != nil {
@@ -94,6 +100,12 @@ func HandleConnection(conn net.Conn, socketPath string, listener net.Listener) e
 		handler.Logger.Printf("[INFO] Traffic Read: %d bytes, Traffic Written: %d bytes", readTraffic, writtenTraffic)
 		return nil
 	case "stop":
+		if err := handler.ClearIptablesIPv6Reject(); err != nil {
+			handler.Logger.Printf("[ERROR] %v", err)
+			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))
+			return err
+		}
+
 		if err := handler.ClearIptablesIPv4(); err != nil {
 			handler.Logger.Printf("[ERROR] %v", err)
 			_, _ = conn.Write([]byte(fmt.Sprintf("Error: %v\n", err)))

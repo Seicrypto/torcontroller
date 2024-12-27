@@ -83,6 +83,21 @@ var ipv6RulesClear = []struct {
 	{"ip6tables", []string{"-t", "nat", "-D", "OUTPUT", "-p", "tcp", "--dport", "443", "-j", "REDIRECT", "--to-ports", "8118"}},
 }
 
+// IPv6 rules for rejecting traffic
+var ipv6RejectRulesApply = []struct {
+	Command string
+	Args    []string
+}{
+	{"ip6tables", []string{"-A", "OUTPUT", "-p", "tcp", "--dport", "9050", "-j", "REJECT"}},
+}
+
+var ipv6RejectRulesClear = []struct {
+	Command string
+	Args    []string
+}{
+	{"ip6tables", []string{"-D", "OUTPUT", "-p", "tcp", "--dport", "9050", "-j", "REJECT"}},
+}
+
 // ApplyIptablesIPv4 applies IPv4 rules
 func (h *CommandHandler) ApplyIptablesIPv4() error {
 	return h.ApplyIptablesRulesFactory(ipv4RulesApply)
@@ -101,4 +116,14 @@ func (h *CommandHandler) ApplyIptablesIPv6() error {
 // ClearIptablesIPv6 clears IPv6 rules
 func (h *CommandHandler) ClearIptablesIPv6() error {
 	return h.ClearIptablesRulesFactory(ipv6RulesClear)
+}
+
+// ApplyIptablesIPv6Reject applies IPv6 reject rules
+func (h *CommandHandler) ApplyIptablesIPv6Reject() error {
+	return h.ApplyIptablesRulesFactory(ipv6RejectRulesApply)
+}
+
+// ClearIptablesIPv6Reject clears IPv6 reject rules
+func (h *CommandHandler) ClearIptablesIPv6Reject() error {
+	return h.ClearIptablesRulesFactory(ipv6RejectRulesClear)
 }
