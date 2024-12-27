@@ -25,7 +25,7 @@ var StopCmd = &cobra.Command{
 			return
 		}
 
-		if response != "done\n" {
+		if response != "Done\n" {
 			log.Warn(fmt.Sprintf("Unexpected response from server: %s", response))
 			fmt.Printf("Unexpected response from server: %s\n", response)
 			return
