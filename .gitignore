@@ -1,6 +1,8 @@
 dockerfile
 dockerfile.*
 
+torcontroller
+
 backup/**
 
 # Ignore debhelper log and stamp files
