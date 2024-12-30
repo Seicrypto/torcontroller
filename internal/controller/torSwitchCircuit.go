@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/hex"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ func (h *CommandHandler) SwitchTorCircuit() error {
 	defer conn.Close()
 
 	// read control.authcookie
-	cookie, err := os.ReadFile("/var/lib/tor/control.authcookie")
+	cookie, err := h.FileSystem.ReadFile("/var/lib/tor/control.authcookie")
 	if err != nil {
 		h.Logger.Printf("[ERROR] Failed to read control.authcookie: %v", err)
 		return fmt.Errorf("failed to read control.authcookie: %v", err)

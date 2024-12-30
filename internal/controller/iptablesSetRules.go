@@ -1,9 +1,7 @@
 package controller
 
 import (
-	"bytes"
 	"fmt"
-	"os/exec"
 	"strings"
 )
 
@@ -15,14 +13,14 @@ func (h *CommandHandler) ApplyIptablesRulesFactory(rules []struct {
 	for _, rule := range rules {
 		h.Logger.Printf("[INFO] Applying rule: %s %s", rule.Command, strings.Join(rule.Args, " "))
 
-		cmd := exec.Command("sudo", append([]string{rule.Command}, rule.Args...)...)
-		var stderr bytes.Buffer
-		cmd.Stderr = &stderr
-
-		if err := cmd.Run(); err != nil {
-			h.Logger.Printf("[ERROR] Failed to apply rule: %v. Error: %s", rule, stderr.String())
+		// Use CommandRunner instead of exec.Command directly
+		output, err := h.CommandRunner.Run("sudo", append([]string{rule.Command}, rule.Args...)...)
+		if err != nil {
+			h.Logger.Printf("[ERROR] Failed to apply rule: %v. Error: %s", rule, err.Error())
 			return fmt.Errorf("failed to apply iptables rule: %w", err)
 		}
+
+		h.Logger.Printf("[INFO] Command output: %s", output)
 	}
 	h.Logger.Println("[INFO] All iptables rules applied successfully.")
 	return nil
@@ -36,21 +34,21 @@ func (h *CommandHandler) ClearIptablesRulesFactory(rules []struct {
 	for _, rule := range rules {
 		h.Logger.Printf("[INFO] Clearing rule: %s %s", rule.Command, strings.Join(rule.Args, " "))
 
-		cmd := exec.Command("sudo", append([]string{rule.Command}, rule.Args...)...)
-		var stderr bytes.Buffer
-		cmd.Stderr = &stderr
-
-		if err := cmd.Run(); err != nil {
-			h.Logger.Printf("[ERROR] Failed to clear rule: %v. Error: %s", rule, stderr.String())
+		// Use CommandRunner instead of exec.Command directly
+		output, err := h.CommandRunner.Run("sudo", append([]string{rule.Command}, rule.Args...)...)
+		if err != nil {
+			h.Logger.Printf("[ERROR] Failed to clear rule: %v. Error: %s", rule, err.Error())
 			return fmt.Errorf("failed to clear iptables rule: %w", err)
 		}
+
+		h.Logger.Printf("[INFO] Command output: %s", output)
 	}
 	h.Logger.Println("[INFO] All iptables rules cleared successfully.")
 	return nil
 }
 
 // IPv4 rules for applying and clearing
-var ipv4RulesApply = []struct {
+var Ipv4RulesApply = []struct {
 	Command string
 	Args    []string
 }{
@@ -58,7 +56,7 @@ var ipv4RulesApply = []struct {
 	{"iptables", []string{"-t", "nat", "-A", "OUTPUT", "-p", "tcp", "--dport", "443", "-j", "REDIRECT", "--to-ports", "8118"}},
 }
 
-var ipv4RulesClear = []struct {
+var Ipv4RulesClear = []struct {
 	Command string
 	Args    []string
 }{
@@ -67,7 +65,7 @@ var ipv4RulesClear = []struct {
 }
 
 // IPv6 rules for applying and clearing
-var ipv6RulesApply = []struct {
+var Ipv6RulesApply = []struct {
 	Command string
 	Args    []string
 }{
@@ -75,7 +73,7 @@ var ipv6RulesApply = []struct {
 	{"ip6tables", []string{"-t", "nat", "-A", "OUTPUT", "-p", "tcp", "--dport", "443", "-j", "REDIRECT", "--to-ports", "8118"}},
 }
 
-var ipv6RulesClear = []struct {
+var Ipv6RulesClear = []struct {
 	Command string
 	Args    []string
 }{
@@ -84,14 +82,14 @@ var ipv6RulesClear = []struct {
 }
 
 // IPv6 rules for rejecting traffic
-var ipv6RejectRulesApply = []struct {
+var Ipv6RejectRulesApply = []struct {
 	Command string
 	Args    []string
 }{
 	{"ip6tables", []string{"-A", "OUTPUT", "-p", "tcp", "--dport", "9050", "-j", "REJECT"}},
 }
 
-var ipv6RejectRulesClear = []struct {
+var Ipv6RejectRulesClear = []struct {
 	Command string
 	Args    []string
 }{
@@ -100,30 +98,30 @@ var ipv6RejectRulesClear = []struct {
 
 // ApplyIptablesIPv4 applies IPv4 rules
 func (h *CommandHandler) ApplyIptablesIPv4() error {
-	return h.ApplyIptablesRulesFactory(ipv4RulesApply)
+	return h.ApplyIptablesRulesFactory(Ipv4RulesApply)
 }
 
 // ClearIptablesIPv4 clears IPv4 rules
 func (h *CommandHandler) ClearIptablesIPv4() error {
-	return h.ClearIptablesRulesFactory(ipv4RulesClear)
+	return h.ClearIptablesRulesFactory(Ipv4RulesClear)
 }
 
 // ApplyIptablesIPv6 applies IPv6 rules
 func (h *CommandHandler) ApplyIptablesIPv6() error {
-	return h.ApplyIptablesRulesFactory(ipv6RulesApply)
+	return h.ApplyIptablesRulesFactory(Ipv6RulesApply)
 }
 
 // ClearIptablesIPv6 clears IPv6 rules
 func (h *CommandHandler) ClearIptablesIPv6() error {
-	return h.ClearIptablesRulesFactory(ipv6RulesClear)
+	return h.ClearIptablesRulesFactory(Ipv6RulesClear)
 }
 
 // ApplyIptablesIPv6Reject applies IPv6 reject rules
 func (h *CommandHandler) ApplyIptablesIPv6Reject() error {
-	return h.ApplyIptablesRulesFactory(ipv6RejectRulesApply)
+	return h.ApplyIptablesRulesFactory(Ipv6RejectRulesApply)
 }
 
 // ClearIptablesIPv6Reject clears IPv6 reject rules
 func (h *CommandHandler) ClearIptablesIPv6Reject() error {
-	return h.ClearIptablesRulesFactory(ipv6RejectRulesClear)
+	return h.ClearIptablesRulesFactory(Ipv6RejectRulesClear)
 }

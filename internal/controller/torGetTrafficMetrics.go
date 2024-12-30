@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/hex"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -18,7 +17,7 @@ func (h *CommandHandler) GetTorTrafficMetrics() (uint, uint, error) {
 	defer conn.Close()
 
 	// Read the control.authcookie and check the length.
-	cookie, err := os.ReadFile("/var/lib/tor/control.authcookie")
+	cookie, err := h.FileSystem.ReadFile("/var/lib/tor/control.authcookie")
 	if err != nil {
 		h.Logger.Printf("[ERROR] Failed to read control.authcookie: %v", err)
 		return 0, 0, fmt.Errorf("failed to read control.authcookie: %v", err)
@@ -64,6 +63,12 @@ func (h *CommandHandler) GetTorTrafficMetrics() (uint, uint, error) {
 			}
 
 			h.Logger.Printf("[INFO] Received line for %s: %s", query, line)
+
+			// Check for 5XX or non-2XX responses
+			if strings.HasPrefix(line, "5") || (len(line) > 3 && line[0] >= '0' && line[0] <= '9' && line[0] != '2') {
+				h.Logger.Printf("[ERROR] Received error response for %s: %s", query, line)
+				return 0, 0, fmt.Errorf("received error response for %s: %s", query, line)
+			}
 
 			if strings.HasPrefix(line, "250-") {
 				// Extract the data and put it into a map

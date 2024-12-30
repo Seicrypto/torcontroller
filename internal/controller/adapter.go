@@ -2,9 +2,10 @@ package controller
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"log"
 	"net"
+	"os"
 	"os/exec"
 
 	"github.com/Seicrypto/torcontroller/internal/singleton/configuration"
@@ -16,6 +17,7 @@ type CommandHandler struct {
 	Socket        ConnectionAdapter            // abstract socket interface
 	CommandRunner CommandRunner                // CLI runner interface
 	Config        *configuration.Configuration // Injected configuration
+	FileSystem    FileSystem                   // Abstract file system
 }
 
 // ConnectionAdapter for abstract socket behavior
@@ -39,19 +41,37 @@ type CommandRunner interface {
 type RealCommandRunner struct{}
 
 func (r *RealCommandRunner) Run(name string, args ...string) (string, error) {
-	cmd := exec.Command(name, args...)
 	var out, errBuf bytes.Buffer
+	cmd := exec.Command(name, args...)
 	cmd.Stdout = &out
 	cmd.Stderr = &errBuf
 
-	err := cmd.Run()
-	if err != nil {
-		return "", errors.New(errBuf.String())
+	if err := cmd.Run(); err != nil {
+		// Include both stdout and stderr in the error
+		return out.String(), fmt.Errorf("%s: %w", errBuf.String(), err)
 	}
 	return out.String(), nil
 }
 
-func NewCommandHandler(socket ConnectionAdapter, runner CommandRunner, log *log.Logger, cfg *configuration.Configuration) *CommandHandler {
+// FileSystem interface for file-related operations
+type FileSystem interface {
+	ReadFile(filename string) ([]byte, error)
+}
+
+// RealFileSystem implements FileSystem using the actual OS
+type RealFileSystem struct{}
+
+func (fs *RealFileSystem) ReadFile(filename string) ([]byte, error) {
+	return os.ReadFile(filename)
+}
+
+func NewCommandHandler(
+	socket ConnectionAdapter,
+	runner CommandRunner,
+	log *log.Logger,
+	cfg *configuration.Configuration,
+	fs FileSystem,
+) *CommandHandler {
 	if log == nil {
 		log = logger.GetLogger().Logger
 	}
@@ -63,5 +83,6 @@ func NewCommandHandler(socket ConnectionAdapter, runner CommandRunner, log *log.
 		Socket:        socket,
 		CommandRunner: runner,
 		Config:        cfg,
+		FileSystem:    fs,
 	}
 }

@@ -9,7 +9,8 @@ import (
 )
 
 func HandleConnection(conn net.Conn, socketPath string, listener net.Listener) error {
-	handler := NewCommandHandler(&RealSocket{Address: "127.0.0.1:9051"}, &RealCommandRunner{}, nil, nil)
+	fs := &RealFileSystem{}
+	handler := NewCommandHandler(&RealSocket{Address: "127.0.0.1:9051"}, &RealCommandRunner{}, nil, nil, fs)
 	defer conn.Close()
 
 	buf := make([]byte, 1024)
