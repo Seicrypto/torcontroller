@@ -42,7 +42,6 @@ func InitCommands() *cobra.Command {
 		StartCmd,
 		StartBackgroundCmd,
 		TrafficCmd,
-		StatusCmd,
 		SwitchCmd,
 		StopCmd,
 		NewPasswordCmd,
