@@ -1,19 +1,7 @@
 all:checkPackage
 	@echo "--------torcontroller--------"
+
 checkPackage:
-# curl
-# For version-1.0 just use for check ip address.
-	@dpkg -s curl >/dev/null 2>&1 || (\
-	echo "The 'curl' package is not installed. Please install it using 'sudo apt install curl' and try again." \
-	&& exit 1\
-	)
-# netcat
-	@dpkg -s netcat-traditional >/dev/null 2>&1 || (\
-	echo "The 'netcat-traditional' package is not installed. Please install it using 'sudo apt install netcat-traditional' and try again." \
-	&& exit 1\
-	)
-# torsocket
-# torsocket seems provide torify bash command. Not sure now.
 # tor
 	@dpkg -s tor >/dev/null 2>&1 || (\
 	echo "The 'tor' package is not installed. Please install it using 'sudo apt install tor' and try again." \
@@ -25,7 +13,6 @@ checkPackage:
 	&& exit 1\
 	)
 # procps
-# Necessary for systemctl.
 	@dpkg -s procps >/dev/null 2>&1 || (\
 	echo "The 'procps' package is not installed. Please install it using 'sudo apt install procps' and try again." \
 	&& exit 1\
@@ -35,39 +22,45 @@ checkPackage:
 	echo "The 'systemctl' package is not installed. Please install it using 'sudo apt install systemctl' and try again." \
 	&& exit 1\
 	)
+# iptables
+	@dpkg -s iptables >/dev/null 2>&1 || (\
+	echo "The 'iptables' package is not installed. Please install it using 'sudo apt install iptables' and try again." \
+	&& exit 1\
+	)
+# sudo
+	@dpkg -s sudo >/dev/null 2>&1 || (\
+	echo "The 'sudo' package is not installed. Please install it using 'sudo apt install sudo' and try again." \
+	&& exit 1\
+	)
+
 install: all
 	@echo "Preparing to install torcontroller package..."
-# Place torcontroller scripts.
+# Install the torcontroller binary
 	install -D -m 755 torcontroller $(DESTDIR)/usr/bin/torcontroller
-	install -D -m 555 ./lib/getIP.sh  $(DESTDIR)/usr/lib/torcontroller/getIP.sh
-	install -D -m 555 ./lib/resetTorPassword.sh  $(DESTDIR)/usr/lib/torcontroller/resetTorPassword.sh
-	install -D -m 555 ./lib/startTorcontrol.sh  $(DESTDIR)/usr/lib/torcontroller/startTorcontrol.sh
-	install -D -m 555 ./lib/stopTorcontrol.sh  $(DESTDIR)/usr/lib/torcontroller/stopTorcontrol.sh
-	install -D -m 555 ./lib/switchTorRouter.sh  $(DESTDIR)/usr/lib/torcontroller/switchTorRouter.sh
-# Place setting files for tor, privoxy's config, and supervisor.
-	install -D -m 644 ./etc/tor.service $(DESTDIR)/usr/src/torcontroller/tmp/tor.service
-	install -D -m 644 ./etc/privoxy.service $(DESTDIR)/usr/src/torcontroller/tmp/privoxy.service
-	install -D -m 644 ./etc/torrc $(DESTDIR)/usr/src/torcontroller/tmp/torrc
-	install -D -m 644 ./etc/config $(DESTDIR)/usr/src/torcontroller/tmp/config
-# Place docs
-	install -D -m 644 README.md $(DESTDIR)/usr/share/doc/torcontroller/README.md
-# Makefile install finished.
-	@echo "torcontroller package Makefile worked successfully."
+# Install the setting files
+	install -D -m 644 initializer/templates/torcontroller.yml $(DESTDIR)/usr/share/torcontroller/defaults/torcontroller.yml
+	install -D -m 644 initializer/templates/tor.service $(DESTDIR)/usr/share/torcontroller/defaults/tor.service
+	install -D -m 644 initializer/templates/privoxy.service $(DESTDIR)/usr/share/torcontroller/defaults/privoxy.service
+	install -D -m 644 initializer/templates/tor/torrc $(DESTDIR)/usr/share/torcontroller/defaults/tor/torrc
+	install -D -m 644 initializer/templates/privoxy/config $(DESTDIR)/usr/share/torcontroller/defaults/privoxy/config
+	install -D -m 644 initializer/templates/sudoers.d/torcontroller $(DESTDIR)/usr/share/torcontroller/defaults/sudoers.d/torcontroller
+
+	@echo "torcontroller package installation completed."
+
 clean:
 # Do not thing.
 disclean: clean
 
 uninstall:
 	@echo "Uninstalling torcontroller..."
-# Remove torcontroller scripts.
-# Just remove each of torcontroller scripts,
-# 'cause users might put thier own files there.
+# Remove the torcontroller binary
 	rm -f $(DESTDIR)/usr/bin/torcontroller
-	rm -f $(DESTDIR)/usr/lib/torcontroller/getIP.sh
-	rm -f $(DESTDIR)/usr/lib/torcontroller/resetTorPassword.sh
-	rm -f $(DESTDIR)/usr/lib/torcontroller/startTorcontrol.sh
-	rm -f $(DESTDIR)/usr/lib/torcontroller/stopTorcontrol.sh
-	rm -f $(DESTDIR)/usr/lib/torcontroller/switchTorRouter.sh
-	rm -f $(DESTDIR)/usr/share/doc/torcontroller/README.md
-# If it was empty after unistalled,
-# directory would be remove by postrm script.
+# Remove defualt setting files
+	rm -f $(DESTDIR)/usr/share/torcontroller/defaults/torcontroller.yml
+	rm -f $(DESTDIR)/usr/share/torcontroller/defaults/tor.service
+	rm -f $(DESTDIR)/usr/share/torcontroller/defaults/privoxy.service
+	rm -f $(DESTDIR)/usr/share/torcontroller/defaults/tor/torrc
+	rm -f $(DESTDIR)/usr/share/torcontroller/defaults/privoxy/config
+	rm -f $(DESTDIR)/usr/share/torcontroller/defaults/sudoers.d/torcontroller
+
+	@echo "torcontroller package uninstallation completed."
