@@ -100,7 +100,7 @@ func (i *Initializer) PlaceTorrcConfig() error {
 		return fmt.Errorf("failed to move torrc file: %w", err)
 	}
 
-	cmd = []string{"sudo", "chmod", "600", torrcPath}
+	cmd = []string{"sudo", "chmod", "644", torrcPath}
 	if _, err := i.CommandRunner.Run(cmd[0], cmd[1:]...); err != nil {
 		return fmt.Errorf("failed to set permissions for torrc file: %w", err)
 	}
@@ -135,7 +135,7 @@ func (i *Initializer) PlacePrivoxyConfig() error {
 		return fmt.Errorf("failed to move privoxy config file: %w", err)
 	}
 
-	cmd = []string{"sudo", "chmod", "600", privoxyConfigPath}
+	cmd = []string{"sudo", "chmod", "644", privoxyConfigPath}
 	if _, err := i.CommandRunner.Run(cmd[0], cmd[1:]...); err != nil {
 		return fmt.Errorf("failed to set permissions for privoxy config file: %w", err)
 	}
