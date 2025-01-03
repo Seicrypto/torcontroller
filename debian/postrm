@@ -1,6 +1,6 @@
 #!/bin/sh
 # If any error, exit.
-# set -xe
+set -e
 
 case "$1" in
     remove)
