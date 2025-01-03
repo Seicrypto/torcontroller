@@ -8,14 +8,14 @@ export DEB_LDFLAGS_MAINT_APPEND = -W1,--as-needed
 %:
 	dh $@
 
-override_dh_clean:
-	dh_clean
-
 override_dh_auto_build:
-	dh_auto_build
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	GOOS=linux GOARCH=amd64 go build -o torcontroller .
+else ifeq ($(DEB_BUILD_ARCH),arm64)
+	GOOS=linux GOARCH=arm64 go build -o torcontroller .
+else
+	$(error Unsupported architecture: $(DEB_BUILD_ARCH))
+endif
 
-override_dh_auto_install:
-	dh_auto_install
-
-override_dh_installdeb:
-	dh_installdeb
+override_dh_dwz:
+	:
