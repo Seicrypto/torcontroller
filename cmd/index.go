@@ -39,6 +39,7 @@ func InitCommands() *cobra.Command {
 	rootCmd.AddCommand(
 		VersionCmd,
 		CheckCmd,
+		InitCmd,
 		StartCmd,
 		StartBackgroundCmd,
 		TrafficCmd,

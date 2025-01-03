@@ -62,6 +62,8 @@ type MockFileSystem struct {
 	Files       map[string]*MockFileInfo
 	Error       error
 	MkdirErrors map[string]error
+	ChmodErrors map[string]error
+	WriteErrors map[string]error
 }
 
 func (m *MockFileSystem) Stat(name string) (os.FileInfo, error) {
@@ -89,5 +91,30 @@ func (m *MockFileSystem) MkdirAll(path string, perm os.FileMode) error {
 	}
 	// Simulate creating a directory
 	m.Files[path] = &MockFileInfo{mode: perm}
+	return nil
+}
+
+// Chmod mocks setting permissions for a file.
+func (m *MockFileSystem) Chmod(name string, mode os.FileMode) error {
+	if err, exists := m.ChmodErrors[name]; exists {
+		return err
+	}
+	file, exists := m.Files[name]
+	if !exists {
+		return errors.New("file not found")
+	}
+	file.mode = mode
+	return nil
+}
+
+// WriteFile mocks writing a file with content and permissions.
+func (m *MockFileSystem) WriteFile(name string, data []byte, perm os.FileMode) error {
+	if err, exists := m.WriteErrors[name]; exists {
+		return err
+	}
+	m.Files[name] = &MockFileInfo{
+		content: data,
+		mode:    perm,
+	}
 	return nil
 }

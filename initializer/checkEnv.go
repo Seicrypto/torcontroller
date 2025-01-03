@@ -8,7 +8,7 @@ import (
 )
 
 //go:embed templates/*
-var templates embed.FS
+var Templates embed.FS
 
 // CheckEnvironment validates and fixes the environment based on configuration.
 func CheckEnvironment(fix bool) {
@@ -17,7 +17,7 @@ func CheckEnvironment(fix bool) {
 	// Initialize the Initializer with embedded templates and a real command runner
 	runner := &controller.RealCommandRunner{}
 	fs := &RealFileSystem{}
-	templateProvider := &EmbedFSWrapper{FS: templates} // Wrap embed.FS
+	templateProvider := &EmbedFSWrapper{FS: Templates} // Wrap embed.FS
 	initializer := NewInitializer(templateProvider, runner, fs)
 
 	configurationPath := "/etc/torcontroller/torcontroller.yml"

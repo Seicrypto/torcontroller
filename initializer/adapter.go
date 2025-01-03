@@ -43,6 +43,8 @@ type FileSystem interface {
 	Stat(name string) (os.FileInfo, error)
 	ReadFile(name string) ([]byte, error)
 	MkdirAll(path string, perm os.FileMode) error
+	Chmod(name string, mode os.FileMode) error
+	WriteFile(name string, data []byte, perm os.FileMode) error
 }
 
 type RealFileSystem struct{}
@@ -57,6 +59,14 @@ func (r *RealFileSystem) ReadFile(name string) ([]byte, error) {
 
 func (r *RealFileSystem) MkdirAll(path string, perm os.FileMode) error {
 	return os.MkdirAll(path, perm)
+}
+
+func (r *RealFileSystem) Chmod(name string, mode os.FileMode) error {
+	return os.Chmod(name, mode)
+}
+
+func (r *RealFileSystem) WriteFile(name string, data []byte, perm os.FileMode) error {
+	return os.WriteFile(name, data, perm)
 }
 
 // Initializer is responsible for system and config validations.

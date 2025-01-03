@@ -9,12 +9,17 @@ import (
 )
 
 func (i *Initializer) VerifyConfigFile(path string) bool {
-	_, err := i.FileSystem.Stat(path)
+	info, err := i.FileSystem.Stat(path)
 	if os.IsNotExist(err) {
 		fmt.Printf("[ERROR] Configuration file not found: %s\n", path)
 		return false
 	} else if err != nil {
 		fmt.Printf("Failed to check Configuration file: %v\n", err)
+		return false
+	}
+
+	if info.IsDir() {
+		fmt.Printf("[ERROR] Configuration path is a directory, not a file: %s\n", path)
 		return false
 	}
 
