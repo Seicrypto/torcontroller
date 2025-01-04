@@ -10,9 +10,9 @@ export DEB_LDFLAGS_MAINT_APPEND = -W1,--as-needed -pie -Wl,-z,relro,-z,now
 
 override_dh_auto_build:
 ifeq ($(DEB_BUILD_ARCH),amd64)
-	GOOS=linux GOARCH=amd64 go build -o torcontroller .
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=gcc go build -ldflags="-linkmode external -extldflags '-Wl,-z,relro,-z,now -pie'" -o torcontroller .
 else ifeq ($(DEB_BUILD_ARCH),arm64)
-	GOOS=linux GOARCH=arm64 go build -o torcontroller .
+	GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=gcc go build -ldflags="-linkmode external -extldflags '-Wl,-z,relro,-z,now -pie'" -o torcontroller .
 else
 	$(error Unsupported architecture: $(DEB_BUILD_ARCH))
 endif
