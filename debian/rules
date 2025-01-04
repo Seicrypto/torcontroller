@@ -2,8 +2,8 @@
 # -*- makefile -*-
 export DH_VERBOSE = 1
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-export DEB_CFLAGS_MAINT_APPEND = -Wall -pedantic
-export DEB_LDFLAGS_MAINT_APPEND = -W1,--as-needed
+export DEB_CFLAGS_MAINT_APPEND = -Wall -pedantic -fPIE
+export DEB_LDFLAGS_MAINT_APPEND = -W1,--as-needed -pie -Wl,-z,relro,-z,now
 
 %:
 	dh $@
@@ -29,3 +29,6 @@ override_dh_fixperms:
 	chmod 644 debian/torcontroller/usr/share/torcontroller/defaults/tor/torrc
 	chmod 644 debian/torcontroller/usr/share/torcontroller/defaults/privoxy/config
 	chmod 644 debian/torcontroller/usr/share/torcontroller/defaults/sudoers.d/torcontroller
+
+override_dh_installman:
+	dh_installman debian/torcontroller.1
