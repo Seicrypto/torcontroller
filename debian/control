@@ -16,8 +16,8 @@ Depends: privoxy(>= 3.0.28), privoxy(<< 3.1),
          sudo,
          ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
-Description: A simple controller to switch network to Tor
-  Torcontroller provides a CLI for managing and switching your network through 
+Description: Torcontroller is a simple controller to switch network to 
+  provides a CLI for managing and switching your network through 
   the Tor network. It integrates Tor, Privoxy, and system utilities to help 
   protect your identity and enhance your privacy. Ideal for use in Docker or 
   lightweight environments.

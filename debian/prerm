@@ -3,7 +3,7 @@ set -e
 
 echo "Stopping torcontroller service before removal..."
 if command -v /usr/bin/torcontroller > /dev/null 2>&1; then
-    /usr/bin/torcontroller stop || true
+    torcontroller stop || true
 else
     echo "torcontroller binary not found. Skipping stop command."
 fi
