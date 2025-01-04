@@ -1,0 +1,68 @@
+name: CI Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggered when a hashtag is pushed
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/seicrypto/torcontroller/torcontroller-build:dev
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+
+    steps:
+    - name: Actions Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Golang
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.13'
+
+    - name: Build for ${{ matrix.arch }}
+      run: |
+        [ -f torcontroller ] && rm torcontroller
+        GOOS=linux GOARCH=${{ matrix.arch }} go build -o torcontroller .
+
+    - name: Import GPG key
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      run: |
+        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+        gpgconf --kill gpg-agent
+        gpgconf --launch gpg-agent
+
+    - name: Package .deb
+      env:
+        GPG_TTY: $(tty)
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      run: |
+        echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback
+        dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }}
+    
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: |
+          Automatic release of .deb package for ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+
+    - name: Upload .deb file
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ../torcontroller_*.deb
+        asset_name: torcontroller_${{ github.ref_name }}_${{ matrix.arch }}.deb
+        asset_content_type: application/octet-stream
