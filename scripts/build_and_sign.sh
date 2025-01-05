@@ -35,6 +35,10 @@ dpkg-buildpackage -k"$GPG_PUBLIC_KEY" -a"$ARCH"
 
 # Write the name of the resulting .deb file to GITHUB_ENV
 deb_file=$(ls ../torcontroller_*_"$ARCH".deb)
+if [ -z "$deb_file" ]; then
+    echo "Error: .deb file not found."
+    exit 1
+fi
 echo "deb_file=$deb_file" >> $GITHUB_ENV
 
 dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" "$deb_file"

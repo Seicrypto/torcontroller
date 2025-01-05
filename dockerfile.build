@@ -2,6 +2,7 @@ FROM debian:bullseye
 WORKDIR /app
 
 RUN apt update && apt install -y \
+    procps\
     build-essential \
     devscripts \
     debhelper \
