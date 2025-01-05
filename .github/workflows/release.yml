@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         arch: [amd64, arm64]
-        os: [ubuntu-22.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'macos-14' || 'ubuntu-22.04' }}
     container:
       image: ghcr.io/seicrypto/torcontroller/torcontroller-build:dev
       options: --platform linux/${{ matrix.arch }}
