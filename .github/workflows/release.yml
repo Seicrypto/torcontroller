@@ -23,11 +23,6 @@ jobs:
       with:
         go-version: '1.21.13'
 
-    - name: Build for ${{ matrix.arch }}
-      run: |
-        [ -f torcontroller ] && rm torcontroller
-        GOOS=linux GOARCH=${{ matrix.arch }} CGO_ENABLED=1 CC=gcc go build -buildvcs=false -ldflags="-linkmode external -extldflags '-Wl,-z,relro,-z,now -pie'" -o torcontroller .
-
     - name: Import GPG key
       env:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}

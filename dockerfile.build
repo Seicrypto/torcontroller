@@ -44,3 +44,11 @@ CMD ["bash"]
 # Build for local test
 # docker build -t torcontroller-build:local -f dockerfile.build .
 # docker run --cap-add=NET_ADMIN --cap-add=NET_RAW --name torcontroller-build-test -dit -p 9050:9050 -p 9051:9051 torcontroller-build:local
+
+# Test CI tag command:
+# git tag v.dev
+# git push origin v.dev
+
+# Remove Test CI tag command:
+# git tag -d v.dev
+# git push origin --delete v.dev
