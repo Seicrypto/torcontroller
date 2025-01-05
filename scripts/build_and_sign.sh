@@ -2,12 +2,32 @@
 set -e
 
 export GPG_TTY=$(tty)
-gpg --import private-key.asc
+
+# Confirm the existence of the private key file
+if [ ! -f ./private-key.asc ]; then
+    echo "Error: private-key.asc not found."
+    exit 1
+fi
+
+gpg --batch --import ./private-key.asc
+
+# Check if the key was imported successfully.
+if ! gpg --list-keys | grep -q "$GPG_PUBLIC_KEY"; then
+    echo "Error: Public key $GPG_PUBLIC_KEY not found."
+    exit 1
+fi
+
 echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
 echo "default-cache-ttl 600" >> ~/.gnupg/gpg-agent.conf
 echo "max-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
 gpgconf --kill gpg-agent
 gpgconf --launch gpg-agent
+
+# Ensure GPG Agent is activated successfully
+if ! pgrep -x "gpg-agent" > /dev/null; then
+    echo "Error: GPG Agent did not start successfully."
+    exit 1
+fi
 
 echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /tmp/signed_dummy_file --sign /etc/hostname
 
