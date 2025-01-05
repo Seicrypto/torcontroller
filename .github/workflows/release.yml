@@ -10,52 +10,33 @@ jobs:
     strategy:
       matrix:
         arch: [amd64, arm64]
-    runs-on: ${{ matrix.arch == 'arm64' && 'macos-14' || 'ubuntu-22.04' }}
-    container:
-      image: ghcr.io/seicrypto/torcontroller/torcontroller-build:dev
-      options: --platform linux/${{ matrix.arch }}
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Actions Checkout
       uses: actions/checkout@v4
 
-    - name: Setup Golang
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21.13'
+    - name: Setup QEMU for ARM
+      run: |
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-    - name: Import GPG key
+    - name: Create .env file
       env:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        GPG_TTY: $(tty)
-      run: |
-        export GPG_TTY=$(tty)
-        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-        echo "default-cache-ttl 600" >> ~/.gnupg/gpg-agent.conf
-        echo "max-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
-        gpgconf --kill gpg-agent
-        gpgconf --launch gpg-agent
-
-    - name: Pre-cached passwords
-      env:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      run: |
-        echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /tmp/signed_dummy_file --sign /etc/hostname
+        GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+        ARCH: ${{ matrix.arch }}
+      run: bash /scripts/env.sh
 
-    - name: Package .deb
-      env:
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    - name: Pull and run container for ${{ matrix.arch }}
       run: |
-        dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }}
-
-    - name: Capture .deb file name
-      id: get_deb_name
-      run: echo "deb_file=$(ls ../torcontroller_*_${{ matrix.arch }}.deb)" >> $GITHUB_ENV
-      
-    - name: Sig debian Package
-      run: |
-        dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" ${{ env.deb_file }}
+        docker run --rm \
+        --platform linux/${{ matrix.arch }} \
+        -v $GITHUB_WORKSPACE:/workspace \
+        -w /workspace \
+        --env-file .env \
+        ghcr.io/seicrypto/torcontroller/torcontroller-build:dev \
+        bash -c "/workspace/scripts/build_and_sign.sh"
     
     - name: Create GitHub Release
       id: create_release
