@@ -46,7 +46,7 @@ jobs:
       env:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       run: |
-        dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }}
+        dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }} -eMY_BUILD_ARCH=${{ matrix.arch }}
 
     - name: Capture .deb file name
       id: get_deb_name
