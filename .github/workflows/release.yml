@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         arch: [amd64, arm64]
-    runs-on: ubuntu-22.04
+        os: [ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
     container:
       image: ghcr.io/seicrypto/torcontroller/torcontroller-build:dev
       options: --platform linux/${{ matrix.arch }}
@@ -51,11 +52,11 @@ jobs:
 
     - name: Capture .deb file name
       id: get_deb_name
-      run: echo "::set-output name=deb_file::$(ls ../torcontroller_*_${{ matrix.arch }}.deb)"
+      run: echo "deb_file=$(ls ../torcontroller_*_${{ matrix.arch }}.deb)" >> $GITHUB_ENV
       
     - name: Sig debian Package
       run: |
-        dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" ${{ steps.get_deb_name.outputs.deb_file }}
+        dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" ${{ env.deb_file }}
     
     - name: Create GitHub Release
       id: create_release
@@ -74,6 +75,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ../torcontroller_*.deb
+        asset_path: ${{ env.deb_file }}
         asset_name: torcontroller_${{ github.ref_name }}_${{ matrix.arch }}.deb
         asset_content_type: application/octet-stream
