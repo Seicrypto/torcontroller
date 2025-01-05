@@ -25,13 +25,19 @@ jobs:
         chmod +x ./scripts/env.sh
         chmod +x ./scripts/build_and_sign.sh
 
+    - name: Create private-key.asc
+      run: |
+        echo "${{ secrets.GPG_PRIVATE_KEY }}" > private-key.asc
+
     - name: Create .env file
       env:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
         ARCH: ${{ matrix.arch }}
-      run: bash ./scripts/env.sh
+      run: |
+        echo "GPG_PASSPHRASE=${GPG_PASSPHRASE}" > .env
+        echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" >> .env
+        echo "ARCH=${ARCH}" >> .env
 
     - name: Pull and run container for ${{ matrix.arch }}
       run: |
@@ -40,7 +46,6 @@ jobs:
         -v $GITHUB_WORKSPACE:/workspace \
         -w /workspace \
         --env-file .env \
-        -v $GITHUB_WORKSPACE/private-key.asc:/workspace/private-key.asc \
         ghcr.io/seicrypto/torcontroller/torcontroller-build:dev \
         bash -c "/workspace/scripts/build_and_sign.sh"
     
