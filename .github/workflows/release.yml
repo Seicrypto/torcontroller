@@ -26,7 +26,7 @@ jobs:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
         ARCH: ${{ matrix.arch }}
-      run: bash /scripts/env.sh
+      run: bash ./scripts/env.sh
 
     - name: Pull and run container for ${{ matrix.arch }}
       run: |
