@@ -31,20 +31,35 @@ jobs:
     - name: Import GPG key
       env:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        GPG_TTY: $(tty)
       run: |
+        export GPG_TTY=$(tty)
         echo "$GPG_PRIVATE_KEY" | gpg --batch --import
         echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+        echo "default-cache-ttl 600" >> ~/.gnupg/gpg-agent.conf
+        echo "max-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
         gpgconf --kill gpg-agent
         gpgconf --launch gpg-agent
 
-    - name: Package .deb
+    - name: Pre-cached passwords
       env:
-        GPG_TTY: $(tty)
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       run: |
-        echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback
+        echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /tmp/signed_dummy_file --sign /etc/hostname
+
+    - name: Package .deb
+      env:
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      run: |
         dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }}
+
+    - name: Capture .deb file name
+      id: get_deb_name
+      run: echo "::set-output name=deb_file::$(ls ../torcontroller_*_${{ matrix.arch }}.deb)"
+      
+    - name: Sig debian Package
+      run: |
+        dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" ${{ steps.get_deb_name.outputs.deb_file }}
     
     - name: Create GitHub Release
       id: create_release
