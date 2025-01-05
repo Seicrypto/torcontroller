@@ -22,7 +22,6 @@ jobs:
 
     - name: Ensure script is executable
       run: |
-        chmod +x ./scripts/env.sh
         chmod +x ./scripts/build_and_sign.sh
 
     - name: Create private-key.asc
