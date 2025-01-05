@@ -21,15 +21,15 @@ RUN apt install -y gnupg2
 RUN apt install -y gcc-aarch64-linux-gnu\
     g++-aarch64-linux-gnu
 
-ARG GO_VERSION=1.21.13
-ARG GO_ARCH=linux-arm64
-RUN curl -LO https://golang.org/dl/go${GO_VERSION}.${GO_ARCH}.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.${GO_ARCH}.tar.gz && \
-    rm go${GO_VERSION}.${GO_ARCH}.tar.gz
-
-ENV PATH="/usr/local/go/bin:${PATH}"
-
 # ------For local test------
+# ARG GO_VERSION=1.21.13
+# ARG GO_ARCH=linux-arm64
+# RUN curl -LO https://golang.org/dl/go${GO_VERSION}.${GO_ARCH}.tar.gz && \
+#     tar -C /usr/local -xzf go${GO_VERSION}.${GO_ARCH}.tar.gz && \
+#     rm go${GO_VERSION}.${GO_ARCH}.tar.gz
+
+# ENV PATH="/usr/local/go/bin:${PATH}"
+
 # COPY . .
 # -------------------------
 

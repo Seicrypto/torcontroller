@@ -1,6 +1,23 @@
 #!/bin/bash
 set -e
 
+# Load environment variables from .env file
+if [ -f .env ]; then
+  export $(cat .env | xargs)
+else
+  echo ".env file not found. Exiting."
+  exit 1
+fi
+
+# Install Go
+GO_VERSION=1.21.13
+curl -LO https://golang.org/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz
+tar -C /usr/local -xzf go${GO_VERSION}.linux-${ARCH}.tar.gz
+rm go${GO_VERSION}.linux-${ARCH}.tar.gz
+
+export PATH="/usr/local/go/bin:${PATH}"
+go version # Verify installation
+
 export GPG_TTY=$(tty)
 
 # Confirm the existence of the private key file
