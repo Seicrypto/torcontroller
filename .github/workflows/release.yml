@@ -7,12 +7,13 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: ubuntu-22.04
-    container:
-      image: ghcr.io/seicrypto/torcontroller/torcontroller-build:dev
     strategy:
       matrix:
         arch: [amd64, arm64]
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/seicrypto/torcontroller/torcontroller-build:dev
+      options: --platform linux/${{ matrix.arch }}
 
     steps:
     - name: Actions Checkout
@@ -46,7 +47,7 @@ jobs:
       env:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       run: |
-        dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }} -eMY_BUILD_ARCH=${{ matrix.arch }}
+        dpkg-buildpackage -k${{ secrets.GPG_PUBLIC_KEY }} -a${{ matrix.arch }}
 
     - name: Capture .deb file name
       id: get_deb_name
