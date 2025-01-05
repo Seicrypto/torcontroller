@@ -2,7 +2,7 @@
 set -e
 
 export GPG_TTY=$(tty)
-echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+gpg --batch --import private-key.asc
 echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
 echo "default-cache-ttl 600" >> ~/.gnupg/gpg-agent.conf
 echo "max-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf

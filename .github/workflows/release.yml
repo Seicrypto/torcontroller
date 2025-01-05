@@ -35,6 +35,7 @@ jobs:
         -v $GITHUB_WORKSPACE:/workspace \
         -w /workspace \
         --env-file .env \
+        -v $GITHUB_WORKSPACE/private-key.asc:/workspace/private-key.asc \
         ghcr.io/seicrypto/torcontroller/torcontroller-build:dev \
         bash -c "/workspace/scripts/build_and_sign.sh"
     
