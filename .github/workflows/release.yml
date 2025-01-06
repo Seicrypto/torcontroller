@@ -16,6 +16,12 @@ jobs:
     - name: Actions Checkout
       uses: actions/checkout@v4
 
+    - name: Configure GitHub CLI with PAT
+      env:
+        GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+      run: |
+        echo "$GH_TOKEN" | gh auth login --with-token
+
     - name: Setup QEMU for ARM
       run: |
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
@@ -76,7 +82,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         tag_name: ${{ github.ref_name }}
         release_name: Release ${{ github.ref_name }}
@@ -87,6 +93,8 @@ jobs:
 
     - name: Upload .deb file
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ${{ env.built_debian }}
