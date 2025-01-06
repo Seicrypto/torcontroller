@@ -16,12 +16,6 @@ jobs:
     - name: Actions Checkout
       uses: actions/checkout@v4
 
-    - name: Configure GitHub CLI with PAT
-      env:
-        GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-      run: |
-        echo "$GH_TOKEN" | gh auth status --with-token
-
     - name: Setup QEMU for ARM
       run: |
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
