@@ -16,12 +16,6 @@ jobs:
     - name: Actions Checkout
       uses: actions/checkout@v4
 
-    - name: Upgrade GitHub CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gh
-        gh --version
-
     - name: Setup QEMU for ARM
       run: |
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
@@ -86,15 +80,10 @@ jobs:
         if gh release view ${{ github.ref_name }} --repo ${{ github.repository }} > /dev/null 2>&1; then
           echo "release_exists=true" >> $GITHUB_ENV
           release=$(gh release view ${{ github.ref_name }} --repo ${{ github.repository }} --json uploadUrl --jq .uploadUrl)
+          echo "upload_url=$release" >> $GITHUB_ENV
         else
           echo "release_exists=false" >> $GITHUB_ENV
-          release=$(gh release create ${{ github.ref_name }} \
-            --repo ${{ github.repository }} \
-            --title "Release ${{ github.ref_name }}" \
-            --notes "Automatic release of .deb package for ${{ github.ref_name }}" \
-            --json uploadUrl --jq .uploadUrl)
         fi
-        echo "upload_url=$release" >> $GITHUB_ENV
 
     - name: Debug release_exists
       run: |
@@ -120,7 +109,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
-        upload_url: ${{ env.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url || env.upload_url }}
         asset_path: ${{ env.built_debian }}
         asset_name: torcontroller_${{ github.ref_name }}_${{ matrix.arch }}.deb
         asset_content_type: application/octet-stream
