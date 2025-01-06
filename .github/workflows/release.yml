@@ -40,14 +40,18 @@ jobs:
 
     - name: Pull and run container for ${{ matrix.arch }}
       run: |
-        docker run -i \
+        docker run -dit \
         --platform linux/${{ matrix.arch }} \
         -v $GITHUB_WORKSPACE:/workspace \
         -w /workspace \
         --env-file .env \
         --name torcontroller_build_${{ matrix.arch }} \
         ghcr.io/seicrypto/torcontroller/torcontroller-build:dev \
-        bash -c "/workspace/scripts/build_and_sign.sh && tail -f /dev/null"
+        tail -f /dev/null
+
+    - name: Execute script in container
+      run: |
+        docker exec torcontroller_build_${{ matrix.arch }} bash -c "/workspace/scripts/build_and_sign.sh"
 
     - name: Load environment variables
       run: |
