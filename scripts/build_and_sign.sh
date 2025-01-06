@@ -56,6 +56,9 @@ if [ -z "$deb_file" ]; then
     echo "Error: .deb file not found."
     exit 1
 fi
-echo "deb_file=$deb_file" >> $GITHUB_ENV
+
+# Extract only the file name (basename)
+deb_file_name=$(basename "$deb_file")
+echo "deb_file=$deb_file_name" >> /workspace/container_up_env
 
 dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" "$deb_file"

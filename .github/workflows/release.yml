@@ -45,9 +45,18 @@ jobs:
         -v $GITHUB_WORKSPACE:/workspace \
         -w /workspace \
         --env-file .env \
+        --name torcontroller_build_${{ matrix.arch }} \
         ghcr.io/seicrypto/torcontroller/torcontroller-build:dev \
         bash -c "/workspace/scripts/build_and_sign.sh"
-    
+
+    - name: Load environment variables
+      run: |
+        cat /workspace/container_up_env >> $GITHUB_ENV
+
+    - name: Copy .deb file from container
+      run: |
+        docker cp torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }} $GITHUB_WORKSPACE/${{ env.deb_file }}
+
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
@@ -65,6 +74,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.deb_file }}
+        asset_path: $GITHUB_WORKSPACE/${{ env.deb_file }}
         asset_name: torcontroller_${{ github.ref_name }}_${{ matrix.arch }}.deb
         asset_content_type: application/octet-stream
