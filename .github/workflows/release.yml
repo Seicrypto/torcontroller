@@ -51,11 +51,15 @@ jobs:
 
     - name: Load environment variables
       run: |
+        docker cp torcontroller_build_${{ matrix.arch }}:/workspace/container_up_env $GITHUB_WORKSPACE/container_up_env
         cat /workspace/container_up_env >> $GITHUB_ENV
 
     - name: Copy .deb file from container
       run: |
         docker cp torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }} $GITHUB_WORKSPACE/${{ env.deb_file }}
+
+    - name: Remove container
+      run: |
         docker rm -f torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }}
 
     - name: Create GitHub Release
