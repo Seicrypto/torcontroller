@@ -20,7 +20,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.PAT_TOKEN }}
       run: |
-        echo "$GH_TOKEN" | gh auth login --with-token
+        echo "$GH_TOKEN" | gh auth login --with-token --quiet
 
     - name: Setup QEMU for ARM
       run: |
