@@ -72,7 +72,17 @@ jobs:
         ls -l $GITHUB_WORKSPACE/${{ env.deb_file_name }}
         echo "built_debian=$GITHUB_WORKSPACE/${{ env.deb_file_name }}" >> $GITHUB_ENV
 
-    - name: Create GitHub Release
+    - name: Ensure GitHub Release
+      id: ensure_release
+      run: |
+        if gh release view ${{ github.ref_name }} --repo ${{ github.repository }} > /dev/null 2>&1; then
+          echo "release_exists=true" >> $GITHUB_ENV
+        else
+          echo "release_exists=false" >> $GITHUB_ENV
+        fi
+
+    - name: Create GitHub Release if not exists
+      if: env.release_exists == 'false'
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -90,7 +100,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url || github.event.release.upload_url }}
         asset_path: ${{ env.built_debian }}
         asset_name: torcontroller_${{ github.ref_name }}_${{ matrix.arch }}.deb
         asset_content_type: application/octet-stream
