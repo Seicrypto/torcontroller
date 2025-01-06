@@ -40,7 +40,7 @@ jobs:
 
     - name: Pull and run container for ${{ matrix.arch }}
       run: |
-        docker run --rm \
+        docker run \
         --platform linux/${{ matrix.arch }} \
         -v $GITHUB_WORKSPACE:/workspace \
         -w /workspace \
@@ -56,6 +56,7 @@ jobs:
     - name: Copy .deb file from container
       run: |
         docker cp torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }} $GITHUB_WORKSPACE/${{ env.deb_file }}
+        docker rm torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }}
 
     - name: Create GitHub Release
       id: create_release
