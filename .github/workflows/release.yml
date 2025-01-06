@@ -60,11 +60,16 @@ jobs:
 
     - name: Copy .deb file from container
       run: |
-        docker cp torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }} $GITHUB_WORKSPACE/${{ env.deb_file }}
+        docker cp torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file_name }} $GITHUB_WORKSPACE/${{ env.deb_file_name }}
 
     - name: Remove container
       run: |
-        docker rm -f torcontroller_build_${{ matrix.arch }}:/${{ env.deb_file }}
+        docker rm -f torcontroller_build_${{ matrix.arch }}
+
+    - name: Verify .deb file existence
+      run: |
+        echo "Checking for file: $GITHUB_WORKSPACE/${{ env.deb_file_name }}"
+        ls -l $GITHUB_WORKSPACE/${{ env.deb_file_name }}
 
     - name: Create GitHub Release
       id: create_release
@@ -83,6 +88,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: $GITHUB_WORKSPACE/${{ env.deb_file }}
+        asset_path: $GITHUB_WORKSPACE/${{ env.deb_file_name }}
         asset_name: torcontroller_${{ github.ref_name }}_${{ matrix.arch }}.deb
         asset_content_type: application/octet-stream
