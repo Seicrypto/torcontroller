@@ -59,6 +59,6 @@ fi
 
 # Extract only the file name (basename)
 deb_file_name=$(basename "$deb_file")
-echo "deb_file=$deb_file_name" >> /workspace/container_up_env
+echo "deb_file_name=$deb_file_name" >> /workspace/container_up_env
 
 dpkg-sig --sign builder --gpg-options="--pinentry-mode loopback" "$deb_file"
