@@ -1,66 +1,24 @@
 #!/bin/sh
 # If any error, exit.
-# set -xe
-# Make sure tor and privoxy service already stopped.
-privoxyResponse=$(systemctl status privoxy)
-case "$privoxyResponse" in
-*"running"*)
-    supervisorctl stop privoxy
-    ;;
-*"dead"* | *"failed"* | *"disabled"*)
-    kill $(pidof privoxy) || true
-    echo "Privoxy stopped."
-    ;;
-*)
-    echo "Unknown privoxy program status!"
-    exit 1
-    ;;
+set -e
+
+case "$1" in
+    remove)
+        ;;
+    purge)
+        echo "Purging configuration files..."
+        # Remove user-modified configuration files with checks
+        [ -f /etc/torcontroller/torcontroller.yml ] && rm -f /etc/torcontroller/torcontroller.yml
+        [ -f /etc/sudoers.d/torcontroller ] && rm -f /etc/sudoers.d/torcontroller
+        [ -f /etc/tor/torrc ] && rm -f /etc/tor/torrc
+        [ -f /etc/privoxy/config ] && rm -f /etc/privoxy/config
+        # Remove systemd service files
+        [ -f /etc/systemd/system/tor.service ] && rm -f /etc/systemd/system/tor.service
+        [ -f /etc/systemd/system/privoxy.service ] && rm -f /etc/systemd/system/privoxy.service
+        echo "Configuration files purged."
+        ;;
 esac
-torResponse=$(systemctl status tor)
-case "$torResponse" in
-*"running"*)
-    systemctl stop tor
-    ;;
-*"dead"* | *"failed"* | *"disabled"*)
-    kill $(pidof tor) || true
-    echo "Tor stopped."
-    ;;
-*)
-    echo "Unknown privoxy program status!"
-    exit 1
-    ;;
-esac
-# If torrc and privoxy backup file existed,
-# replace it.
-if [ ! -f /etc/tor/torrc.back ]; then
-    cp /etc/tor/torrc.back /etc/tor/torrc
-    rm -f /etc/tor/torrc.back
-fi
-if [ ! -f /etc/privoxy/config.back ]; then
-    cp /etc/privoxy/config.back /etc/privoxy/config
-    rm -f /etc/privoxy/config.back
-fi
-# If supervisor user setting backup file existed,
-# replace it.
-if [ ! -f /etc/supervisor/supervisord.conf.back ]; then
-    cp /etc/supervisor/supervisord.conf.back /etc/supervisor/supervisord.conf
-    rm -f cp /etc/supervisor/supervisord.conf.back
-    supervisorctl reread
-    supervisorctl update
-fi
-# Remove any tmp files.
-rm -rf /usr/src/torcontroller/tmp
-# Remove torcontroller directory.
-# if empty
-if [ -z "$(ls -A /usr/lib/torcontroller)" ]; then
-    rm -rf /usr/lib/torcontroller
-fi
-if [ -z "$(ls -A /usr/share/torcontroller)" ]; then
-    rm -rf /usr/share/torcontroller
-fi
-if [ -z "$(ls -A /usr/src/torcontroller)" ]; then
-    rm -rf /usr/src/torcontroller
-fi
+
 echo "postrm script fiinished."
 
 #DEBHELPLER#

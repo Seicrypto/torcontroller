@@ -1,11 +1,18 @@
 # torcontroller
 
-[![GitHub release](https://img.shields.io/github/release/Seicrypto/torcontroller.svg)](https://github.com/Seicrypto/torcontroller/releases/latest) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSeicrypto%2Ftorcontroller&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://github.com/Seicrypto/torcontroller)
+[![GitHub release](https://img.shields.io/github/release/Seicrypto/torcontroller.svg)](https://github.com/Seicrypto/torcontroller/releases/latest)
+[![Test](https://github.com/Seicrypto/torcontroller/actions/workflows/test.yml/badge.svg)](https://github.com/Seicrypto/torcontroller/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/Seicrypto/torcontroller/branch/main/graph/badge.svg)](https://codecov.io/gh/Seicrypto/torcontroller)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSeicrypto%2Ftorcontroller&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://github.com/Seicrypto/torcontroller)
 [![Github All Releases](https://img.shields.io/github/downloads/Seicrypto/torcontroller/total.svg?color=87CEEB)](https://github.com/Seicrypto/torcontroller)
 
-What is [tor](https://www.torproject.org/)? "The Onion Router," is free and open-source software for enabling anonymous communication.
+TorController is a CLI tool designed for [Tor VPN](https://www.torproject.org/) users that integrates commonly used features to make it easier for you to redirect and control your network through Tor.
 
-torcontroller is a Debian package which combines tor, privoxy, systemctl packages, and so on. torcontroller Dev built some scripts to let you just command on Linux: Debian bullseye environments including docker container. You will be able to run your application and control tor router by a function that writes any back-end program.
+- **Traffic Redirection**: Route all network requests through Tor.
+- **IPv4 Support**: Focused on IPv4 networks and block IPv6.
+- **Linux Compatibility**: Works on Linux systems, including Docker.
+- **Speed Requirements**: Set minimum connection speeds for stability. [More](./docs/setting.md)
+- **CLI Control**: Simple and efficient command-line operations.
 
 If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller>
 Read more
@@ -13,48 +20,9 @@ Read more
 Japanese README:
 [日本語説明こちら](./READMEJP.md)
 
-## What does torcontroller do?
-
-UML sequence diagram with mermaid:
-
-```mermaid
-sequenceDiagram
-%% Declaration
-    box blue Your sources
-    participant usr as Back-End Applications
-    end
-    box green torcontroller
-    participant pv as Privoxy
-    participant tor as TOR server nodes
-    end
-    participant tg as Target (Domain/IP)
-%% Relation
-    usr->>pv: request, 8118 port
-    Note over pv: non-caching
-    Note over pv: modifying HTTP headers
-    pv->>tor: socket, 9050 port
-    Note over tor: wrap IP address
-    tor->>tg: CRUD
-    tg->>tor: response
-    Note over tor: Auth
-    tor->>pv: response
-    Note over pv: Controlling access
-    Note over pv: Blocking tracking
-    pv->>usr: response data
-```
-
-Actually, there are more feature with privoxy and TOR. If you were interested in privoxy and TOR features, please visit thier sites. torcontroller only simple scripts to controll them.
-
 ## QuickStart
 
-Use in:
-
-* [Linux Debian / Ubuntu](#linux)
-* [Docker container](#use-in-docker-container)
-
-### Linux
-
-![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
 Now torcontroller suport on Linux Debian / Ubuntu else.
 
@@ -83,108 +51,71 @@ Step2. Set up your AUTHENTICATE password
 
 ```bash
 #!/bin/bash
-torcontoller --version
-# torcontroller version X.X
+torcontoller
+# torcontroller instructions for use
 
-torcontroller --resetpassword
-# torcontroller info ...
-# Enter old TOR password:
-# (torcontroller set as default password)
+torcontroller init
+# Overwrite setting and random tor password
 ```
 
-Step3. Check tor and privoxy feature
+Step3. Start your using
 
 ```bash
+curl http://icanhazip.com/
+# 89.196.159.79 (a example your ture ip address)
+
 #!/bin/bash
-torcontroller --start
+torcontroller start
 # log info...
 # Start command succeeded.
 
-curl -x 127.0.0.1:8118 http://icanhazip.com/
-# 176.10.99.200 (a example tor ip address)
 curl http://icanhazip.com/
-# 89.196.159.79 (a example your ture ip address)
+# 176.10.99.200 (a example tor ip address)
 ```
 
-### Use in docker container
+## What does torcontroller do?
 
- ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+UML sequence diagram with mermaid:
 
-Please make sure your docker image base on debian.
-Such as bullseye, bookworm:
-
-* golang:bullseye
-* golang:bookworm
-* python:3.9-bullseye
-* node:bullseye
-* so on...
-
-Step1. Download and Install package
-
-```dockerfile
-# dockerfile
-# Recommend bullseye / bookworn ... else built according degina system.
-From golang:bullseye
-# Of course work for any programming you want,
-# just remmember use image: bullseye, bookworm, and so on.
-WORKDIR /app
-
-# Make sure there's wget in your docker image.
-RUN apt-get update
-
-# Intel / AMD cpu:
-RUN wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0.1/torcontroller_1.0.1_amd64.deb
-RUN apt-get install -y /app/torcontroller_1.0.1_amd64.deb
-# Be careful about your download and install path.
-
-# ARM cpu:
-# RUN wget https://github.com/Seicrypto/torcontroller/releases/download/v1.0.1/torcontroller_1.0.1.arm64.deb
-# RUN apt-get install -y /app/torcontroller_1.0.1_arm64.deb
+```mermaid
+sequenceDiagram
+%% Declaration
+    box blue Your environment
+    participant usr as Applications
+    end
+    box green torcontroller unix socket working
+    participant ipt as Iptabales
+    participant pv as Privoxy
+    participant tor as TOR server nodes
+    end
+    participant tg as Target Service (Domain/IP)
+%% Relation
+    usr->>ipt: net request, 443 & 80 port
+    Note over ipt: redirects
+    ipt->>pv: 8118 port
+    Note over pv: non-caching
+    Note over pv: modifying HTTP headers
+    pv->>tor: socket, 9050 port
+    Note over tor: wrap IP address
+    tor->>tg: CRUD
+    tg->>tor: response
+    Note over tor: Auth
+    tor->>pv: response
+    Note over pv: Controlling access
+    Note over pv: Blocking tracking
+    pv->>usr: response data
 ```
 
-Step2. Set up your AUTHENTICATE password
-
-Terminal (Recommend)
-
-```bash
-# Terminal
-# This sample using 9050 as socketPort, 9051 as controlPort on machine.
-docker run -it -p 9050:9050 -p 9051:9051 --name <your-container-name> <docker-image>
-
-# Check torcontroller installed properly.
-docker exec <your-container-name> torcontroller --version
-# torcontroller version X.X-X
-
-# On terminal to control docker.
-docker exec -i <your-container-name> torcontroller --resetpassword
-# torcontroller info ...
-# Enter old TOR password:
-# (torcontroller set as default password)
-```
-
-Step3. Check tor and privoxy feature
-
-Call bash in your programing function. You could build it by yourself or import it.
-
-Be careful! Use 127.0.0.1:8118 Port as proxy in your application. It would go through tor socket 9050 Port in your docker container.
-
-Example:
-
-* ![golang](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white) [Golang: gotorcontroller](https://github.com/Seicrypto/gocontroller)
-* Other programming func lib might update in future.
-
-## Detail
-
-Read more torcontroller command:
-
-[torcontroller command list](./docs/commandList.md)
+Actually, there are more feature with privoxy and TOR. If you were interested in privoxy and TOR features, please visit thier sites. torcontroller only simple scripts to controll them.
 
 ## Reference
-
-[A step-by-step guide how to use Python with Tor and Privoxy](https://gist.github.com/DusanMadar/8d11026b7ce0bce6a67f7dd87b999f6b) :
-
-Which is my basic script content reference.
 
 [tor.service file for systemctl](https://gist.github.com/gtank/f6a8f99c70f682cd8d4acd6a4a9ee696)
 
 [privoxy.service file for systemctl](https://alt.os.linux.mageia.narkive.com/D2i3xOYQ/privoxy-service-file-for-systemd)
+
+## Usage Disclaimer
+
+This tool, **Torcontroller**, is developed to help users enhance their privacy and protect their online activities in lawful and ethical ways. It is strictly prohibited to use this tool for unauthorized access, illegal data scraping, or any activities that violate privacy laws (e.g., GDPR, CCPA) or ethical standards.
+
+By using this tool, you agree to comply with all applicable laws and take full responsibility for your actions. The developers are not liable for any misuse or unlawful activities carried out with this tool.

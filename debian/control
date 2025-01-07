@@ -2,38 +2,23 @@ Source: torcontroller
 Section: net
 Priority: optional
 Maintainer: Sei <seikanchintw@gmail.com>
-Build-Depends: curl,
-               debhelper-compat (= 12),
-               nano,
-               netcat-traditional (>= 1.10-39),
-               privoxy(>= 3.0.28),
-               procps,
-               systemctl (>= 1.4),
-               tor(>= 0.4.2.7),
-               torsocks
+Build-Depends: debhelper-compat (= 12)
 Standards-Version: 4.6.2
 Homepage: https://github.com/Seicrypto/torcontroller
 
 Package: torcontroller
-Architecture: any
-Depends: curl,
-         netcat-traditional (>= 1.10-39),
-         privoxy(>= 3.0.28),
+Architecture: amd64 arm64
+Depends: ${shlibs:Depends},
+         privoxy(>= 3.0.28), privoxy(<< 3.1),
          procps,
          systemctl (>= 1.4),
-         tor(>= 0.4.2.7),
-         torsocks,
+         tor(>= 0.4.2.7), tor(<< 0.5),
+         iptables,
+         sudo,
          ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
-Description: Using different IP addresses through TOR structure under Debian
-  torcontroller is a Debian package which combines tor, privoxy, and so on.
-  torcontroller controls tor and privoxy pid with systemctl.
-  You will be able to run your application,
-  and control tor router by a function that writes any back-end program.
-  torcontroller Dev built some scripts to let you just command on Linux:
-  Debian bullseye environments including docker container.
-  This package is already including necessary depends.
-  Be careful!
-  If you were installing another net tools such as,
-  google-chrome-stable.deb etc.. to build your application,
-  please read thier docs and check if there is any conflict with tor, or privoxy.
+Description: This package is a simple cli controller to switch network 
+ to provide a CLI for managing and switching your network through 
+ the Tor network. It integrates Tor, Privoxy, and system utilities to help 
+ protect your identity and enhance your privacy. Ideal for use in Docker or 
+ lightweight environments.

@@ -1,4 +1,9 @@
 dockerfile
+dockerfile.*
+
+torcontroller
+
+backup/**
 
 # Ignore debhelper log and stamp files
 .debhelper
@@ -7,3 +12,7 @@ dockerfile
 /debian/torcontroller
 /debian/files
 debhelper-build-stamp
+
+# GitHub Container Registry (GHCR)
+!dockerfile.testenv
+!dockerfile.build
