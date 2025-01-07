@@ -1,12 +1,20 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Seicrypto/torcontroller/internal/singleton/configuration"
 	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
 )
+
+var socketPath = "/tmp/torcontroller.sock"
+
+// Define a private type to avoid conflicts
+type contextKey string
+
+const HandlerKey = contextKey("handler")
 
 // Root Command
 var rootCmd = &cobra.Command{
@@ -21,11 +29,17 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("failed to load configuration: %v", err)
 		}
 
+		// Initialize the SocketInteractionHandler here.
+		handler := &SocketInteractionHandler{
+			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
+		}
+
+		ctx := context.WithValue(cmd.Context(), HandlerKey, handler)
+		cmd.SetContext(ctx)
+
 		return nil
 	},
 }
-
-var socketPath = "/tmp/torcontroller.sock"
 
 var pidFile = "/tmp/torcontroller.pid"
 
