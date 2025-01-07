@@ -43,10 +43,9 @@ rate_limit:
    - Add or update the configuration as needed:
 
     ```yaml
-    Copy code
     rate_limit:
-    min_read_rate: 10000
-    min_write_rate: 5000
+        min_read_rate: 10000
+        min_write_rate: 5000
     ```
 
 2. Apply Changes:
