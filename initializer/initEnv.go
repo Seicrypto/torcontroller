@@ -10,6 +10,7 @@ func (i *Initializer) InitializeAllConfig() error {
 		"templates/privoxy.service":         "/etc/systemd/system/privoxy.service",
 		"templates/tor.service":             "/etc/systemd/system/tor.service",
 		"templates/privoxy/config":          "/etc/privoxy/config",
+		"templates/tor/torrc":               "/etc/tor/torrc",
 		"templates/sudoers.d/torcontroller": "/etc/sudoers.d/torcontroller",
 		"templates/torcontroller.yml":       "/etc/torcontroller/torcontroller.yml",
 	}
