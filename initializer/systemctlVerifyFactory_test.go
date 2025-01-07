@@ -10,7 +10,8 @@ import (
 func TestCheckTorService(t *testing.T) {
 	mockRunner := &MockCommandRunner{
 		CommandResponses: map[string]string{
-			"sudo systemctl show tor": "LoadState=loaded",
+			`sudo systemctl show tor`: "LoadState=loaded",
+			`.*`:                      "Unexpected response",
 		},
 		CommandErrors: nil,
 	}
@@ -31,7 +32,8 @@ func TestCheckTorService(t *testing.T) {
 func TestCheckPrivoxyService(t *testing.T) {
 	mockRunner := &MockCommandRunner{
 		CommandResponses: map[string]string{
-			"sudo systemctl show privoxy": "LoadState=loaded",
+			`sudo systemctl show privoxy`: "LoadState=loaded",
+			`.*`:                          "Unexpected response",
 		},
 		CommandErrors: nil,
 	}
@@ -59,7 +61,8 @@ func TestCheckServiceFile(t *testing.T) {
 		{
 			serviceName: "tor",
 			mockResponses: map[string]string{
-				"sudo systemctl show tor": "LoadState=loaded",
+				`sudo systemctl show tor`: "LoadState=loaded",
+				`.*`:                      "Unexpected response",
 			},
 			mockErrors:    nil,
 			expectedValid: true,
