@@ -27,7 +27,7 @@ func (i *Initializer) PlacePrivoxyServiceFile() error {
 // writeServiceFile writes a service file to the specified path.
 func (i *Initializer) writeServiceFile(path string, content []byte) error {
 	tmpFile := "/tmp/service.tmp"
-	if err := os.WriteFile(tmpFile, content, 0644); err != nil {
+	if err := i.FileSystem.WriteFile(tmpFile, content, 0644); err != nil {
 		return fmt.Errorf("failed to write temp file: %w", err)
 	}
 

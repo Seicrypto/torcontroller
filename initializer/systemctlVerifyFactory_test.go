@@ -9,7 +9,10 @@ import (
 
 func TestCheckTorService(t *testing.T) {
 	mockRunner := &MockCommandRunner{
-		Output: "LoadState=loaded",
+		CommandResponses: map[string]string{
+			"sudo systemctl show tor": "LoadState=loaded",
+		},
+		CommandErrors: nil,
 	}
 
 	initializer := initializer.NewInitializer(&MockTemplates{}, mockRunner, &MockFileSystem{})
@@ -18,7 +21,8 @@ func TestCheckTorService(t *testing.T) {
 		t.Errorf("expected CheckTorService to return true for valid service")
 	}
 
-	mockRunner.Output = "LoadState=failed"
+	// Test for an invalid response
+	mockRunner.CommandResponses["sudo systemctl show tor"] = "LoadState=failed"
 	if initializer.CheckTorService() {
 		t.Errorf("expected CheckTorService to return false for invalid service")
 	}
@@ -26,7 +30,10 @@ func TestCheckTorService(t *testing.T) {
 
 func TestCheckPrivoxyService(t *testing.T) {
 	mockRunner := &MockCommandRunner{
-		Output: "LoadState=loaded",
+		CommandResponses: map[string]string{
+			"sudo systemctl show privoxy": "LoadState=loaded",
+		},
+		CommandErrors: nil,
 	}
 
 	initializer := initializer.NewInitializer(&MockTemplates{}, mockRunner, &MockFileSystem{})
@@ -35,7 +42,8 @@ func TestCheckPrivoxyService(t *testing.T) {
 		t.Errorf("expected CheckPrivoxyService to return true for valid service")
 	}
 
-	mockRunner.Output = "LoadState=inactive"
+	// Test for an invalid response
+	mockRunner.CommandResponses["sudo systemctl show privoxy"] = "LoadState=inactive"
 	if initializer.CheckPrivoxyService() {
 		t.Errorf("expected CheckPrivoxyService to return false for invalid service")
 	}
@@ -44,26 +52,34 @@ func TestCheckPrivoxyService(t *testing.T) {
 func TestCheckServiceFile(t *testing.T) {
 	tests := []struct {
 		serviceName   string
-		mockOutput    string
-		mockError     error
+		mockResponses map[string]string
+		mockErrors    map[string]error
 		expectedValid bool
 	}{
 		{
-			serviceName:   "tor",
-			mockOutput:    "LoadState=loaded",
-			mockError:     nil,
+			serviceName: "tor",
+			mockResponses: map[string]string{
+				"sudo systemctl show tor": "LoadState=loaded",
+			},
+			mockErrors:    nil,
 			expectedValid: true,
 		},
 		{
-			serviceName:   "privoxy",
-			mockOutput:    "LoadState=failed",
-			mockError:     nil,
+			serviceName: "privoxy",
+			mockResponses: map[string]string{
+				"sudo systemctl show privoxy": "LoadState=failed",
+			},
+			mockErrors:    nil,
 			expectedValid: false,
 		},
 		{
-			serviceName:   "tor",
-			mockOutput:    "",
-			mockError:     errors.New("command failed"),
+			serviceName: "tor",
+			mockResponses: map[string]string{
+				"sudo systemctl show tor": "",
+			},
+			mockErrors: map[string]error{
+				"sudo systemctl show tor": errors.New("command failed"),
+			},
 			expectedValid: false,
 		},
 	}
@@ -71,8 +87,8 @@ func TestCheckServiceFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.serviceName, func(t *testing.T) {
 			mockRunner := &MockCommandRunner{
-				Output: tt.mockOutput,
-				Error:  tt.mockError,
+				CommandResponses: tt.mockResponses,
+				CommandErrors:    tt.mockErrors,
 			}
 
 			init := initializer.NewInitializer(&MockTemplates{}, mockRunner, &MockFileSystem{})

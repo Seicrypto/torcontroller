@@ -2,22 +2,42 @@ package initializer_test
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"regexp"
+	"strings"
 	"syscall"
 	"time"
 )
 
-// MockCommandRunner is a mock implementation of the CommandRunner interface for testing.
 type MockCommandRunner struct {
-	Output string
-	Error  error
+	CommandResponses map[string]string
+	CommandErrors    map[string]error
 }
 
 func (m *MockCommandRunner) Run(name string, args ...string) (string, error) {
-	if m.Error != nil {
-		return "", m.Error
+	command := fmt.Sprintf("%s %s", name, strings.Join(args, " "))
+
+	// Check for exact matches
+	if response, exists := m.CommandResponses[command]; exists {
+		if err, hasError := m.CommandErrors[command]; hasError {
+			return "", err
+		}
+		return response, nil
 	}
-	return m.Output, nil
+
+	// Use canonical matching
+	for pattern, response := range m.CommandResponses {
+		matched, _ := regexp.MatchString(pattern, command)
+		if matched {
+			if err, hasError := m.CommandErrors[pattern]; hasError {
+				return "", err
+			}
+			return response, nil
+		}
+	}
+
+	return "", fmt.Errorf("no mock response defined for command: %s", command)
 }
 
 // MockTemplates is a mock implementation of TemplateProvider for testing.
@@ -43,13 +63,17 @@ type MockFileInfo struct {
 	mode    os.FileMode
 	uid     uint32
 	gid     uint32
+	exists  bool
+	isDir   bool
 }
 
 func (m *MockFileInfo) Name() string       { return "mockfile" }
 func (m *MockFileInfo) Size() int64        { return 0 }
 func (m *MockFileInfo) Mode() os.FileMode  { return m.mode }
 func (m *MockFileInfo) ModTime() time.Time { return time.Now() }
-func (m *MockFileInfo) IsDir() bool        { return false }
+func (m *MockFileInfo) IsDir() bool {
+	return m.isDir
+}
 func (m *MockFileInfo) Sys() interface{} {
 	return &syscall.Stat_t{
 		Uid: m.uid,
@@ -66,15 +90,11 @@ type MockFileSystem struct {
 	WriteErrors map[string]error
 }
 
-func (m *MockFileSystem) Stat(name string) (os.FileInfo, error) {
-	if m.Error != nil {
-		return nil, m.Error
+func (m *MockFileSystem) Stat(path string) (os.FileInfo, error) {
+	if file, exists := m.Files[path]; exists && file.exists {
+		return file, nil
 	}
-	info, exists := m.Files[name]
-	if !exists {
-		return nil, errors.New("file not found")
-	}
-	return info, nil
+	return nil, os.ErrNotExist
 }
 
 func (m *MockFileSystem) ReadFile(name string) ([]byte, error) {
@@ -90,7 +110,7 @@ func (m *MockFileSystem) MkdirAll(path string, perm os.FileMode) error {
 		return err
 	}
 	// Simulate creating a directory
-	m.Files[path] = &MockFileInfo{mode: perm}
+	m.Files[path] = &MockFileInfo{mode: perm, exists: true}
 	return nil
 }
 
@@ -108,13 +128,18 @@ func (m *MockFileSystem) Chmod(name string, mode os.FileMode) error {
 }
 
 // WriteFile mocks writing a file with content and permissions.
-func (m *MockFileSystem) WriteFile(name string, data []byte, perm os.FileMode) error {
-	if err, exists := m.WriteErrors[name]; exists {
+func (m *MockFileSystem) WriteFile(filename string, data []byte, perm os.FileMode) error {
+	if err, exists := m.WriteErrors[filename]; exists {
 		return err
 	}
-	m.Files[name] = &MockFileInfo{
+	m.Files[filename] = &MockFileInfo{
 		content: data,
 		mode:    perm,
+		exists:  true,
 	}
 	return nil
+}
+
+func (m *MockFileSystem) IsNotExist(err error) bool {
+	return errors.Is(err, os.ErrNotExist)
 }

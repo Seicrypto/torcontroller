@@ -10,18 +10,21 @@ import (
 func TestVerifyTorrcConfig(t *testing.T) {
 	tests := []struct {
 		name          string
+		mockCommand   string
 		mockOutput    string
 		mockError     error
 		expectedValid bool
 	}{
 		{
 			name:          "ValidTorrcConfig",
+			mockCommand:   "sudo tor --verify-config",
 			mockOutput:    "Configuration valid",
 			mockError:     nil,
 			expectedValid: true,
 		},
 		{
 			name:          "InvalidTorrcConfig",
+			mockCommand:   "sudo tor --verify-config",
 			mockOutput:    "",
 			mockError:     errors.New("invalid configuration"),
 			expectedValid: false,
@@ -31,8 +34,12 @@ func TestVerifyTorrcConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockRunner := &MockCommandRunner{
-				Output: tt.mockOutput,
-				Error:  tt.mockError,
+				CommandResponses: map[string]string{
+					tt.mockCommand: tt.mockOutput,
+				},
+				CommandErrors: map[string]error{
+					tt.mockCommand: tt.mockError,
+				},
 			}
 
 			init := initializer.NewInitializer(&MockTemplates{}, mockRunner, &MockFileSystem{})

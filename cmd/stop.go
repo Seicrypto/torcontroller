@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 
+	"github.com/Seicrypto/torcontroller/internal/controller"
+	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -13,29 +14,43 @@ var StopCmd = &cobra.Command{
 	Short: "Stop a Torcontroller listener",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Send the "stop" command to the listener via the socket
-		handler := &SocketInteractionHandler{
-			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
+		// Get the cmd ctx
+		handler, ok := cmd.Context().Value(HandlerKey).(*SocketInteractionHandler)
+		if !ok || handler == nil {
+			fmt.Println("Error: handler not initialized")
+			return
+		}
+
+		fs, ok := cmd.Context().Value(FileSystem).(controller.FileSystem)
+		if !ok {
+			fmt.Println("Error: FileSystem not initialized")
+			return
+		}
+
+		logger, ok := cmd.Context().Value(Logger).(*logger.Logger)
+		if !ok {
+			fmt.Println("Error: Logger not initialized")
+			return
 		}
 
 		response, err := handler.SendCommandAndGetResponse("stop")
 		if err != nil {
-			log.Error(fmt.Sprintf("Error sending command: %v", err))
+			logger.Error(fmt.Sprintf("Error sending command: %v", err))
 			fmt.Printf("Error sending command: %v\n", err)
 			return
 		}
 
 		if response != "Done\n" {
-			log.Warn(fmt.Sprintf("Unexpected response from server: %s", response))
+			logger.Warn(fmt.Sprintf("Unexpected response from server: %s", response))
 			fmt.Printf("Unexpected response from server: %s\n", response)
 			return
 		}
 
-		log.Info("Server confirmed successful stop.")
+		logger.Info("Server confirmed successful stop.")
 		fmt.Println("Server confirmed successful stop.")
 
 		// Read the PID file
-		data, err := os.ReadFile(pidFile)
+		data, err := fs.ReadFile(pidFile)
 		if err != nil {
 			fmt.Printf("Error reading PID file: %v\n", err)
 			return
@@ -47,7 +62,7 @@ var StopCmd = &cobra.Command{
 			return
 		}
 
-		proc, err := os.FindProcess(pid)
+		proc, err := fs.FindProcess(pid)
 		if err != nil {
 			fmt.Printf("Error finding process: %v\n", err)
 			return
@@ -59,9 +74,9 @@ var StopCmd = &cobra.Command{
 			return
 		}
 
-		os.Remove(socketPath)
-		os.Remove(pidFile)
-		log.Info(fmt.Sprintf("Torcontroller listener at %s stopped successfully.\n", socketPath))
-		fmt.Printf("Torcontroller listener at %s stopped successfully.\n", socketPath)
+		fs.Remove(socketPath)
+		fs.Remove(pidFile)
+		logger.Info(fmt.Sprintf("Torcontroller listener at %s stopped successfully.\n", socketPath))
+		fmt.Fprintf(cmd.OutOrStdout(), "Torcontroller listener at %s stopped successfully.\n", socketPath)
 	},
 }

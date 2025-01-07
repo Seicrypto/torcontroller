@@ -56,6 +56,8 @@ func (r *RealCommandRunner) Run(name string, args ...string) (string, error) {
 // FileSystem interface for file-related operations
 type FileSystem interface {
 	ReadFile(filename string) ([]byte, error)
+	FindProcess(pid int) (*os.Process, error)
+	Remove(filename string) error
 }
 
 // RealFileSystem implements FileSystem using the actual OS
@@ -63,6 +65,20 @@ type RealFileSystem struct{}
 
 func (fs *RealFileSystem) ReadFile(filename string) ([]byte, error) {
 	return os.ReadFile(filename)
+}
+
+// FindProcess finds a process by its PID
+func (fs *RealFileSystem) FindProcess(pid int) (*os.Process, error) {
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		return nil, err
+	}
+	return process, nil
+}
+
+// Remove deletes the file specified by the filename
+func (fs *RealFileSystem) Remove(filename string) error {
+	return os.Remove(filename)
 }
 
 func NewCommandHandler(

@@ -125,8 +125,9 @@ func (m *MockFileInfo) Sys() interface{} {
 
 // MockFileSystem is a mock implementation of FileSystem for testing.
 type MockFileSystem struct {
-	Files map[string]*MockFileInfo
-	Error error
+	Files         map[string]*MockFileInfo
+	ProcessExists map[int]bool
+	Error         error
 }
 
 func (m *MockFileSystem) Stat(name string) (os.FileInfo, error) {
@@ -146,4 +147,21 @@ func (m *MockFileSystem) ReadFile(name string) ([]byte, error) {
 		return nil, errors.New("file not found")
 	}
 	return info.content, nil
+}
+
+// FindProcess simulates finding a process by PID
+func (fs *MockFileSystem) FindProcess(pid int) (*os.Process, error) {
+	if exists := fs.ProcessExists[pid]; exists {
+		return &os.Process{Pid: pid}, nil
+	}
+	return nil, errors.New("process not found")
+}
+
+// Remove simulates removing a file
+func (fs *MockFileSystem) Remove(filename string) error {
+	if _, exists := fs.Files[filename]; exists {
+		delete(fs.Files, filename)
+		return nil
+	}
+	return errors.New("file not found")
 }

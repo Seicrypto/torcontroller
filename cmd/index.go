@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Seicrypto/torcontroller/internal/controller"
 	"github.com/Seicrypto/torcontroller/internal/singleton/configuration"
 	"github.com/Seicrypto/torcontroller/internal/singleton/logger"
 	"github.com/spf13/cobra"
@@ -15,6 +16,8 @@ var socketPath = "/tmp/torcontroller.sock"
 type contextKey string
 
 const HandlerKey = contextKey("handler")
+const FileSystem = contextKey("fileSystem")
+const Logger = contextKey("logger")
 
 // Root Command
 var rootCmd = &cobra.Command{
@@ -29,12 +32,22 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("failed to load configuration: %v", err)
 		}
 
-		// Initialize the SocketInteractionHandler here.
+		// Initialize the SocketInteractionHandler
 		handler := &SocketInteractionHandler{
 			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
 		}
 
-		ctx := context.WithValue(cmd.Context(), HandlerKey, handler)
+		// Initialize singleton logger
+		logger := logger.GetLogger()
+
+		// Initialize the real file system
+		fs := &controller.RealFileSystem{}
+
+		// Pass these instances into the context
+		ctx := cmd.Context()
+		ctx = context.WithValue(ctx, HandlerKey, handler)
+		ctx = context.WithValue(ctx, FileSystem, fs)
+		ctx = context.WithValue(ctx, Logger, logger)
 		cmd.SetContext(ctx)
 
 		return nil

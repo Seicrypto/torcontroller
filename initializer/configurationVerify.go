@@ -2,7 +2,6 @@ package initializer
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/Seicrypto/torcontroller/internal/singleton/configuration"
 	"gopkg.in/yaml.v3"
@@ -10,7 +9,7 @@ import (
 
 func (i *Initializer) VerifyConfigFile(path string) bool {
 	info, err := i.FileSystem.Stat(path)
-	if os.IsNotExist(err) {
+	if i.FileSystem.IsNotExist(err) {
 		fmt.Printf("[ERROR] Configuration file not found: %s\n", path)
 		return false
 	} else if err != nil {
