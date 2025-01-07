@@ -8,6 +8,12 @@
 
 TorController is a CLI tool designed for [Tor VPN](https://www.torproject.org/) users that integrates commonly used features to make it easier for you to redirect and control your network through Tor.
 
+- **Traffic Redirection**: Route all network requests through Tor.
+- **IPv4 Support**: Focused on IPv4 networks and block IPv6.
+- **Linux Compatibility**: Works on Linux systems, including Docker.
+- **Speed Requirements**: Set minimum connection speeds for stability. [More](./docs/setting.md)
+- **CLI Control**: Simple and efficient command-line operations.
+
 If you are not reading this on github, please go to <https://github.com/Seicrypto/torcontroller>
 Read more
 

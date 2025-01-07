@@ -8,6 +8,12 @@
 
 TorControllerは[Tor VPN](https://www.torproject.org/)ユーザのために設計されたCLIツールで、よく使われる機能を統合し、Torを介したネットワークのリダイレクトと制御を簡単にします。
 
+- **トラフィックのリダイレクト**： すべてのネットワークリクエストをTor経由でルーティングします。
+- **IPv4サポート**： IPv4ネットワークに焦点を当て、IPv6をブロックする。
+- **Linux互換性**： Dockerを含むLinuxシステム上で動作します。
+- **速度要件**： 安定性のために最低接続速度を設定します。[詳細](./docs/setting.md)
+- **CLIコントロール**： シンプルで効率的なコマンドライン操作。
+
 ## クイック・スタート
 
 ![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
