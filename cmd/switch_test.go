@@ -1,38 +1,42 @@
 package cmd_test
 
 import (
-	"net"
+	"bytes"
+	"context"
 	"testing"
 
 	"github.com/Seicrypto/torcontroller/cmd"
+	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSwitchCmd(t *testing.T) {
-	client, server := net.Pipe()
-	defer client.Close()
-	defer server.Close()
-
-	go func() {
-		buf := make([]byte, 1024)
-		n, _ := server.Read(buf)
-		received := string(buf[:n])
-		if received != "switch" {
-			t.Errorf("Expected command 'switch', but got '%s'", received)
-		}
-		server.Write([]byte("ACK\n"))
-	}()
-
-	handler := &cmd.SocketInteractionHandler{
-		Adapter: &MockAdapter{Client: client, Server: server},
+	// Create a mock response map
+	responseMap := map[string]string{
+		"switch": "Switch successful: New IP is 192.0.2.1\n",
 	}
 
-	response, err := handler.SendCommandAndGetResponse("switch")
-	if err != nil {
-		t.Fatalf("Execution failed: %v", err)
+	mockSocket := &MockSocket{
+		ResponseMap: responseMap,
+		CloseSignal: make(chan struct{}),
+	}
+	mockHandler := &cmd.SocketInteractionHandler{
+		Adapter: mockSocket,
 	}
 
-	expected := "ACK\n"
-	if response != expected {
-		t.Errorf("Expected response '%s', but got '%s'", expected, response)
-	}
+	rootCmd := &cobra.Command{}
+	rootCmd.SetContext(context.WithValue(context.Background(), cmd.HandlerKey, mockHandler))
+	rootCmd.AddCommand(cmd.SwitchCmd)
+
+	// Execute the traffic command
+	args := []string{"switch"}
+	rootCmd.SetArgs(args)
+
+	output := &bytes.Buffer{}
+	rootCmd.SetOut(output)
+
+	err := rootCmd.Execute()
+
+	assert.NoError(t, err)
+	assert.Contains(t, output.String(), "Switch successful: New IP is 192.0.2.1")
 }

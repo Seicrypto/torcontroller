@@ -10,8 +10,10 @@ var SwitchCmd = &cobra.Command{
 	Use:   "switch",
 	Short: "Switch the Tor IP",
 	Run: func(cmd *cobra.Command, args []string) {
-		handler := &SocketInteractionHandler{
-			Adapter: &UnixSocketAdapter{SocketPath: socketPath},
+		handler, ok := cmd.Context().Value(HandlerKey).(*SocketInteractionHandler)
+		if !ok || handler == nil {
+			fmt.Println("Error: handler not initialized")
+			return
 		}
 
 		response, err := handler.SendCommandAndGetResponse("switch")
@@ -20,6 +22,6 @@ var SwitchCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Printf("Response: %s\n", response)
+		fmt.Fprintf(cmd.OutOrStdout(), "Response: %s\n", response)
 	},
 }
