@@ -27,12 +27,12 @@ LinuxのDebian / Ubuntu以外でtorcontrollerが使えるようになりまし�
 apt-get update
 
 # Intel / AMD cpu:
-wget https://github.com/Seicrypto/torcontroller/releases/download/v1.1.0/torcontroller_1.1.0_amd64.deb
-apt-get install -y ./torcontroller_1.1.0_amd64.deb
+wget https://github.com/Seicrypto/torcontroller/releases/download/v1.1.0/torcontroller_v1.1.0_amd64.deb
+apt-get install -y ./torcontroller_v1.1.0_amd64.deb
 
 # ARM cpu:
-# wget https://github.com/Seicrypto/torcontroller/releases/download/v1.1.0/torcontroller_1.1.0_arm64.deb
-# apt-get install -y ./torcontroller_1.1.0_arm64.deb
+# wget https://github.com/Seicrypto/torcontroller/releases/download/v1.1.0/torcontroller_v1.1.0_arm64.deb
+# apt-get install -y ./torcontroller_v1.1.0_arm64.deb
 
 # * ARMまたはIntel / AMDを使用しているマシンを知る方法
 # uname -m
